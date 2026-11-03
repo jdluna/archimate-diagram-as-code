@@ -1,0 +1,10 @@
+# jarchi-example
+jarchi-example/**/.build/
+jarchi-example/**/dist/
+jarchi-example/**/out/
+jarchi-example/**/local.env
+
+# pyarchimate
+pyarchimate/**/.venv/
+pyarchimate/**/__pycache__/
+pyarchimate/**/*.pyc

@@ -1,0 +1,205 @@
+/*
+ * Read a JSON model and create the ArchiMate elements, relationships, and views
+ * in the model that ACLI loaded before this script (see --createEmptyModel).
+ *
+ * Pass the JSON path on the Archi command line:
+ *   --json /absolute/path/claims.json
+ *
+ * Element types use Archi's kebab-case names (business-actor, node,
+ * assignment-relationship). Viewpoint ids are Archi's own
+ * (layered, application_usage, technology), from
+ * com.archimatetool.model/model/viewpoints.xml.
+ */
+
+var Files = Java.type("java.nio.file.Files");
+var Paths = Java.type("java.nio.file.Paths");
+var JString = Java.type("java.lang.String");
+var System = Java.type("java.lang.System");
+
+// Archi 5 names the technology folder "Technology & Physical". The JSON
+// keeps the shorter layer name used by the rest of the example.
+var TOP_FOLDERS = {
+    "Business": "Business",
+    "Application": "Application",
+    "Technology": "Technology & Physical",
+    "Strategy": "Strategy",
+    "Motivation": "Motivation",
+    "Implementation & Migration": "Implementation & Migration",
+    "Other": "Other",
+    "Views": "Views"
+};
+
+function fail(message) {
+    // jArchi catches a script exception and ACLI then saves whatever was
+    // built. Leaving the process here keeps a failed run from writing a file.
+    System.err.println(message);
+    System.exit(1);
+}
+
+var NODE_WIDTH = 148;
+var NODE_HEIGHT = 58;
+
+function argumentValue(flag) {
+    var args = $.process.argv;
+    var prefix = flag + "=";
+    for (var i = 0; i < args.length; i++) {
+        var arg = String(args[i]);
+        if (arg === flag && i + 1 < args.length) {
+            return String(args[i + 1]);
+        }
+        if (arg.indexOf(prefix) === 0) {
+            return arg.substring(prefix.length);
+        }
+    }
+    return null;
+}
+
+function readJson(path) {
+    var bytes = Files.readAllBytes(Paths.get(path));
+    return JSON.parse(new JString(bytes, "UTF-8"));
+}
+
+function topFolder(name) {
+    var folderName = TOP_FOLDERS[name] || name;
+    var match = null;
+    $("folder").each(function(folder) {
+        if (folder.name === folderName) {
+            match = folder;
+        }
+    });
+    if (match === null) {
+        fail("Archi folder not found: " + folderName);
+    }
+    return match;
+}
+
+function childFolder(parent, name) {
+    var match = null;
+    // $(parent) is the public collection API. FolderProxy.children() is not
+    // exposed to the script engine.
+    $(parent).children("folder").each(function(child) {
+        if (child.name === name) {
+            match = child;
+        }
+    });
+    if (match === null) {
+        match = parent.createFolder(name);
+    }
+    return match;
+}
+
+function folderFor(layer, subfolder) {
+    var parent = topFolder(layer);
+    if (!subfolder) {
+        return parent;
+    }
+    return childFolder(parent, subfolder);
+}
+
+function requireElement(index, id) {
+    if (!index[id]) {
+        fail("JSON refers to unknown element id '" + id + "'");
+    }
+    return index[id];
+}
+
+var jsonPath = argumentValue("--json");
+if (!jsonPath) {
+    fail("Missing --json <file>. Example: --json /path/to/claims.json");
+}
+
+var data = readJson(jsonPath);
+console.log("Reading " + jsonPath);
+
+model.name = data.name || "Generated model";
+if (data.purpose) {
+    model.purpose = data.purpose;
+}
+
+var elements = {};
+var elementList = data.elements || [];
+for (var i = 0; i < elementList.length; i++) {
+    var spec = elementList[i];
+    var folder = folderFor(spec.layer, spec.folder);
+    var element;
+    try {
+        element = model.createElement(spec.type, spec.name, folder);
+    } catch (error) {
+        fail("Could not create " + spec.type + " '" + spec.name + "': " + error);
+    }
+    if (spec.documentation) {
+        element.documentation = spec.documentation;
+    }
+    element.prop("json-id", spec.id);
+    elements[spec.id] = element;
+}
+
+var relationships = {};
+var relationshipList = data.relationships || [];
+for (var r = 0; r < relationshipList.length; r++) {
+    var link = relationshipList[r];
+    var source = requireElement(elements, link.source);
+    var target = requireElement(elements, link.target);
+    var relationship;
+    try {
+        relationship = model.createRelationship(link.type, link.name || "", source, target);
+    } catch (error) {
+        fail("Could not create " + link.type + " from '" + link.source + "' to '" + link.target + "': " + error);
+    }
+    relationship.prop("json-id", link.id);
+    relationships[link.id] = relationship;
+}
+
+var viewList = data.views || [];
+for (var v = 0; v < viewList.length; v++) {
+    var viewSpec = viewList[v];
+    var viewFolder = childFolder(topFolder("Views"), viewSpec.folder || "Generated");
+    var view = model.createArchimateView(viewSpec.name, viewFolder);
+    if (viewSpec.documentation) {
+        view.documentation = viewSpec.documentation;
+    }
+
+    var nodes = {};
+    var nodeList = viewSpec.nodes || [];
+    for (var n = 0; n < nodeList.length; n++) {
+        var nodeSpec = nodeList[n];
+        var concept = requireElement(elements, nodeSpec.element);
+        try {
+            nodes[nodeSpec.element] = view.add(
+                concept,
+                nodeSpec.x || 0,
+                nodeSpec.y || 0,
+                nodeSpec.w || NODE_WIDTH,
+                nodeSpec.h || NODE_HEIGHT
+            );
+        } catch (error) {
+            fail("Could not place '" + nodeSpec.element + "' on view '" + viewSpec.name + "': " + error);
+        }
+    }
+
+    for (var c = 0; c < relationshipList.length; c++) {
+        var relSpec = relationshipList[c];
+        if (nodes[relSpec.source] && nodes[relSpec.target]) {
+            try {
+                view.add(relationships[relSpec.id], nodes[relSpec.source], nodes[relSpec.target]);
+            } catch (error) {
+                fail("Could not draw '" + relSpec.id + "' on view '" + viewSpec.name + "': " + error);
+            }
+        }
+    }
+
+    if (viewSpec.viewpoint) {
+        try {
+            view.setViewpoint(viewSpec.viewpoint);
+        } catch (error) {
+            fail("Could not set viewpoint '" + viewSpec.viewpoint + "' on '" + viewSpec.name + "': " + error);
+        }
+    }
+    console.log("View '" + view.name + "' has " + nodeList.length + " nodes");
+}
+
+console.log(
+    "Created " + elementList.length + " elements, " +
+    relationshipList.length + " relationships, " +
+    viewList.length + " views"
+);

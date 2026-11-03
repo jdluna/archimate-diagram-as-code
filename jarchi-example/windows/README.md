@@ -1,0 +1,176 @@
+# Archi 5.3.0 on Windows, from Git Bash
+
+These scripts compile [jArchi 1.7.0](https://github.com/archimatetool/archi-scripting-plugin/tree/v1.7.0)
+against the [Archi 5.3.0](https://github.com/archimatetool/archi/tree/release_5.3.0)
+source tree, then run the JSON script with the Archi 5.3.0 application you
+already have. jArchi 1.7.0 declares Java 17 and Archi 5.2.0 or later, which
+is the pair that matches Archi 5.3.0.
+
+`build.sh` and `run.sh` use the JDK and Maven already selected in that Git
+Bash window. They do not download Java, Maven, Archi, or the plug-in source.
+
+The model script is `../scripts/create-from-json.ajs` and the sample file is
+`../model/claims.json`. The generated file is `out/claims-handling.archimate`
+in this folder.
+
+## 1. Place the Archi 5.3.0 application
+
+You already downloaded Archi 5.3.0. Unzip the portable zip into a folder you
+can write to, for example `C:\Users\you\Archi`. The folder must contain
+`Archi.exe`.
+
+In Git Bash that path is `/c/Users/you/Archi`. That value is `ARCHI_HOME`.
+`run.sh` reads it and does not copy Archi anywhere else.
+
+## 2. Download the Archi 5.3.0 source
+
+The installed application is the program that runs the script. The compiler
+reads a second tree, the Archi source at tag `release_5.3.0`.
+
+Download the tag zip and unzip it:
+
+https://github.com/archimatetool/archi/archive/refs/tags/release_5.3.0.zip
+
+The zip unpacks to a folder named `archi-release_5.3.0`. That folder contains
+`pom.xml` with `<revision>5.3.0-SNAPSHOT</revision>`. In Git Bash, that path
+is `ARCHI_SRC`.
+
+With git, the same tree is:
+
+```bash
+git clone --branch release_5.3.0 --depth 1 https://github.com/archimatetool/archi.git
+```
+
+## 3. Download jArchi 1.7.0
+
+Download the tag zip and unzip it:
+
+https://github.com/archimatetool/archi-scripting-plugin/archive/refs/tags/v1.7.0.zip
+
+The zip unpacks to `archi-scripting-plugin-1.7.0`. It contains
+`com.archimatetool.script`, `com.archimatetool.script.commandline`, and
+`com.archimatetool.script.nashorn`. The script manifest says
+`Bundle-Version: 1.7.0.qualifier`. In Git Bash, that path is `JARCHI_SRC`.
+
+With git:
+
+```bash
+git clone --branch v1.7.0 --depth 1 https://github.com/archimatetool/archi-scripting-plugin.git
+```
+
+Keep `ARCHI_SRC` and `JARCHI_SRC` on the same drive. The build records the
+path from one tree to the other inside the Archi `pom.xml`.
+
+## 4. Select Java 17 and Maven with sdk
+
+Open Git Bash. `sdk` has to be available in that window (`sdk version`
+prints a version). Pick the JDK 17 and the Maven you already installed:
+
+```bash
+sdk list java
+sdk use java 17.0.13-tem
+sdk current java
+
+sdk list maven
+sdk use maven 3.9.6
+sdk current maven
+```
+
+Use the identifiers `sdk list` prints on your machine. The `17.0.13-tem`
+and `3.9.6` lines above are examples. Archi 5.3.0 compiles with Java 17.
+`build.sh` stops when `JAVA_HOME` is a different major version.
+
+`sdk use` applies only to this window. Run it again in every new Git Bash
+window before `./build.sh`. The script inherits `JAVA_HOME` and `PATH` from
+that window.
+
+Check the selection before building:
+
+```bash
+echo "$JAVA_HOME"
+java -version
+mvn -version
+```
+
+`java -version` should report 17. `mvn -version` should report the Maven
+from `sdk current maven`, and the Java home on its last lines should be the
+same JDK.
+
+## 5. Record the three folders
+
+From this `windows` directory:
+
+```bash
+cp local.env.example local.env
+```
+
+Edit `local.env` so the three exports match the folders from steps 1 to 3.
+Leave Java and Maven out of that file. `sdk use` supplies them.
+
+```bash
+export ARCHI_HOME="/c/Users/you/Archi"
+export ARCHI_SRC="/c/Users/you/src/archi-release_5.3.0"
+export JARCHI_SRC="/c/Users/you/src/archi-scripting-plugin-1.7.0"
+```
+
+`build.sh` and `run.sh` load `local.env` when the file is present. You can
+export the same three variables in the window instead of using the file.
+
+## 6. Build
+
+Stay in the same Git Bash window, in this directory:
+
+```bash
+cd /c/Users/you/src/archimate-diagram-as-code/jarchi-example/windows
+sdk use java 17.0.13-tem
+sdk use maven 3.9.6
+./build.sh
+```
+
+`build.sh` then does the following with those values:
+
+1. Reads `ARCHI_SRC`, `JARCHI_SRC`, `JAVA_HOME`, and `mvn` from the window.
+2. Checks that the Archi pom is `5.3.0-SNAPSHOT` and that jArchi is `1.7.0.qualifier`.
+3. Writes three `<module>` entries into `ARCHI_SRC/pom.xml` and a `pom.xml`
+   into each jArchi bundle. Those files are the local edits the reactor needs.
+   The bundle version in each new pom is `1.7.0-SNAPSHOT`, which pairs with
+   `1.7.0.qualifier` in the manifest.
+4. Runs `mvn -B -Drevision=5.3.0-SNAPSHOT clean package -DskipTests -P'!tests'`
+   from `ARCHI_SRC`, using the `mvn` and `JAVA_HOME` from this window.
+5. Copies the three jars into `windows/dist`.
+
+The first Maven run downloads the Eclipse 2023-06 dependencies declared by
+Archi 5.3.0. Later runs reuse the local Maven cache.
+
+## 7. Generate the model
+
+In that same window:
+
+```bash
+./run.sh
+./run.sh ../model/claims.json out/claims-handling.archimate
+```
+
+`run.sh` reads `ARCHI_HOME` and does the following:
+
+1. Copies `dist/com.archimatetool.script*.jar` to `%APPDATA%\Archi\dropins`,
+   which is the dropins folder Archi 5.3.0 reads on Windows.
+2. Creates `%USERPROFILE%\Documents\Archi\scripts` when that folder is missing.
+   jArchi's GraalJS engine expects it.
+3. Starts `ARCHI_HOME/Archi.exe` with the window closed:
+
+```text
+Archi.exe -clean -application com.archimatetool.commandline.app
+  -consoleLog -nosplash --abortOnException
+  --script.runScript <create-from-json.ajs>
+  --json <claims.json>
+  --saveModel <out/claims-handling.archimate>
+  --createEmptyModel
+```
+
+`--createEmptyModel` stays last because it accepts an optional template path
+and would otherwise consume the next argument. Archi still creates the empty
+model, runs the script, then saves.
+
+The check at the end prints the element, relationship, and view counts. The
+file to open in Archi is `windows/out/claims-handling.archimate`.
