@@ -9,8 +9,9 @@ is the pair that matches Archi 5.3.0.
 `build.sh` and `run.sh` use the JDK and Maven already selected in that Git
 Bash window. They do not download Java, Maven, Archi, or the plug-in source.
 
-The model script is `../scripts/create-from-json.ajs` and the sample file is
-`../model/claims.json`. The generated file is `out/claims-handling.archimate`
+The model script is `../scripts/create-from-json.ajs`. The sample files are
+`../model/claims.json` and `../model/harbor-landscape.json`. The generated
+files are `out/claims-handling.archimate` and `out/harbor-landscape.archimate`
 in this folder.
 
 ## 1. Place the Archi 5.3.0 application
@@ -149,6 +150,7 @@ In that same window:
 ```bash
 ./run.sh
 ./run.sh ../model/claims.json out/claims-handling.archimate
+./run.sh ../model/harbor-landscape.json out/harbor-landscape.archimate
 ```
 
 `run.sh` reads `ARCHI_HOME` and does the following:
@@ -173,4 +175,5 @@ and would otherwise consume the next argument. Archi still creates the empty
 model, runs the script, then saves.
 
 The check at the end prints the element, relationship, and view counts. The
-file to open in Archi is `windows/out/claims-handling.archimate`.
+files to open in Archi are `windows/out/claims-handling.archimate` and
+`windows/out/harbor-landscape.archimate`.

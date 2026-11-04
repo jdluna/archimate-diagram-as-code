@@ -5,10 +5,19 @@
  * Pass the JSON path on the Archi command line:
  *   --json /absolute/path/claims.json
  *
- * Element types use Archi's kebab-case names (business-actor, node,
+ * Element types use Archi's kebab-case names (business-actor, grouping,
  * assignment-relationship). Viewpoint ids are Archi's own
  * (layered, application_usage, technology), from
  * com.archimatetool.model/model/viewpoints.xml.
+ *
+ * A view node may set "parent" to another element id already placed on that
+ * view. The child is then added inside that diagram object, and x/y are
+ * relative to the parent. That is how a Grouping holds its members.
+ * Archi stores every junction as one element. "or-junction" and
+ * "and-junction" are created as a junction, then the junction type is set.
+ * A relationship may set "draw": false to stay in the model without a line
+ * on the views. Grouping aggregations use that so the box itself shows
+ * membership.
  */
 
 var Files = Java.type("java.nio.file.Files");
@@ -25,6 +34,7 @@ var TOP_FOLDERS = {
     "Strategy": "Strategy",
     "Motivation": "Motivation",
     "Implementation & Migration": "Implementation & Migration",
+    "Physical": "Technology & Physical",
     "Other": "Other",
     "Views": "Views"
 };
@@ -96,6 +106,24 @@ function folderFor(layer, subfolder) {
     return childFolder(parent, subfolder);
 }
 
+function elementType(specType) {
+    // Archi's model has one Junction class. Or and And are a property of it.
+    if (specType === "or-junction" || specType === "and-junction") {
+        return "junction";
+    }
+    return specType;
+}
+
+function junctionKind(specType) {
+    if (specType === "or-junction") {
+        return "or";
+    }
+    if (specType === "and-junction") {
+        return "and";
+    }
+    return null;
+}
+
 function requireElement(index, id) {
     if (!index[id]) {
         fail("JSON refers to unknown element id '" + id + "'");
@@ -108,7 +136,12 @@ if (!jsonPath) {
     fail("Missing --json <file>. Example: --json /path/to/claims.json");
 }
 
-var data = readJson(jsonPath);
+var data;
+try {
+    data = readJson(jsonPath);
+} catch (error) {
+    fail("Could not read JSON '" + jsonPath + "': " + error);
+}
 console.log("Reading " + jsonPath);
 
 model.name = data.name || "Generated model";
@@ -123,9 +156,13 @@ for (var i = 0; i < elementList.length; i++) {
     var folder = folderFor(spec.layer, spec.folder);
     var element;
     try {
-        element = model.createElement(spec.type, spec.name, folder);
+        element = model.createElement(elementType(spec.type), spec.name, folder);
     } catch (error) {
         fail("Could not create " + spec.type + " '" + spec.name + "': " + error);
+    }
+    var kind = junctionKind(spec.type);
+    if (kind) {
+        element.setJunctionType(kind);
     }
     if (spec.documentation) {
         element.documentation = spec.documentation;
@@ -164,8 +201,19 @@ for (var v = 0; v < viewList.length; v++) {
     for (var n = 0; n < nodeList.length; n++) {
         var nodeSpec = nodeList[n];
         var concept = requireElement(elements, nodeSpec.element);
+        var container = view;
+        if (nodeSpec.parent) {
+            container = nodes[nodeSpec.parent];
+            if (!container) {
+                fail(
+                    "Node '" + nodeSpec.element + "' on view '" + viewSpec.name +
+                    "' is nested in '" + nodeSpec.parent +
+                    "', which must appear earlier in that view"
+                );
+            }
+        }
         try {
-            nodes[nodeSpec.element] = view.add(
+            nodes[nodeSpec.element] = container.add(
                 concept,
                 nodeSpec.x || 0,
                 nodeSpec.y || 0,
@@ -179,6 +227,9 @@ for (var v = 0; v < viewList.length; v++) {
 
     for (var c = 0; c < relationshipList.length; c++) {
         var relSpec = relationshipList[c];
+        if (relSpec.draw === false) {
+            continue;
+        }
         if (nodes[relSpec.source] && nodes[relSpec.target]) {
             try {
                 view.add(relationships[relSpec.id], nodes[relSpec.source], nodes[relSpec.target]);

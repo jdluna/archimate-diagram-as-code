@@ -14,6 +14,16 @@ JSON="${1:-$ROOT/model/claims.json}"
 OUT="${2:-$ROOT/out/claims-handling.archimate}"
 SCRIPT="$ROOT/scripts/create-from-json.ajs"
 
+# Archi.app keeps its working directory inside the application bundle, so a
+# relative path would be read and written next to the Archi binary.
+if [[ "$JSON" != /* ]]; then
+  JSON="$(cd "$(dirname "$JSON")" && pwd)/$(basename "$JSON")"
+fi
+mkdir -p "$(dirname "$OUT")"
+if [[ "$OUT" != /* ]]; then
+  OUT="$(cd "$(dirname "$OUT")" && pwd)/$(basename "$OUT")"
+fi
+
 if [[ ! -d "$DIST" || -z "$(find "$DIST" -name 'com.archimatetool.script*.jar' -print -quit)" ]]; then
   echo "jArchi bundles are not in $DIST. Run ./build-jarchi.sh first." >&2
   exit 1

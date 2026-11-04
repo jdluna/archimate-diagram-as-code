@@ -6,9 +6,14 @@ against [Archi 5.10.0](https://github.com/archimatetool/archi/tree/release_5.10.
 installs the three bundles into Archi's dropins folder, and runs Archi's
 command line with the window closed.
 
-The script `scripts/create-from-json.ajs` reads `model/claims.json` and creates
-the elements, relationships, and views. The result is
-`out/claims-handling.archimate`, which Archi opens with File > Open.
+The script `scripts/create-from-json.ajs` reads a JSON model and creates
+the elements, relationships, and views. `model/claims.json` is the small
+landscape and writes `out/claims-handling.archimate`.
+`model/harbor-landscape.json` is the full landscape: a context diagram, a
+conceptual architecture, and a logical architecture, with every ArchiMate
+element type. Each area is a Grouping, and the concepts are nested in that
+box. It writes `out/harbor-landscape.archimate`. Archi opens either file
+with File > Open.
 
 jArchi's repositories have no parent build of their own. The build checks
 out Archi `release_5.10.0`, adds the three jArchi bundles to that reactor,
@@ -37,10 +42,12 @@ application argument list. Element types are Archi's kebab-case names
 (`business-actor`, `assignment-relationship`). A view's `viewpoint` is an
 Archi viewpoint id (`layered`, `application_usage`, `technology`). A
 relationship is drawn on a view when both of its elements are placed on
-that view.
+that view. `"draw": false` keeps the relationship in the model and off the
+views. A node with `"parent"` is nested inside that element, which is how
+the Harbor groupings hold their members.
 
-`layer` selects an Archi top folder. `Technology` is stored in Archi's
-`Technology & Physical` folder. `folder` is a subfolder created under that
+`layer` selects an Archi top folder. `Technology` and `Physical` are stored
+in Archi's `Technology & Physical` folder. `folder` is a subfolder created under that
 folder, and under `Views` for diagrams.
 
 A model with no embedded images is written by Archi as the model XML inside
@@ -72,6 +79,7 @@ cd jarchi-example
 ./build-jarchi.sh
 ./run.sh
 ./run.sh model/claims.json out/claims-handling.archimate
+./run.sh model/harbor-landscape.json out/harbor-landscape.archimate
 ```
 
 `run.sh` launches:
@@ -103,6 +111,7 @@ From Git Bash, in this folder:
 cmd //c build-jarchi.bat
 cmd //c run-jarchi.bat
 cmd //c "run-jarchi.bat model/claims.json out/claims-handling.archimate"
+cmd //c "run-jarchi.bat model/harbor-landscape.json out/harbor-landscape.archimate"
 ```
 
 `//c` is required so Git Bash passes `/c` through to `cmd`. `run-jarchi.bat`

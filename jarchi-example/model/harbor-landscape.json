@@ -1,0 +1,1908 @@
+{
+  "name": "Harbor claims landscape",
+  "purpose": "Generated from model/harbor-landscape.json by scripts/create-from-json.ajs. A Harbor insurer settles motor claims. The context diagram shows who meets the enterprise, the conceptual view shows why and which capabilities matter, and the logical view shows how the business, applications, platform, premises, and change fit together. Every ArchiMate element type appears at least once. Each area is a Grouping, and its members are nested in that box.",
+  "elements": [
+    {
+      "id": "customer",
+      "type": "business-actor",
+      "name": "Customer",
+      "layer": "Business",
+      "folder": "Harbor",
+      "documentation": "Person who holds the policy and reports the loss."
+    },
+    {
+      "id": "policyholder",
+      "type": "business-role",
+      "name": "Policyholder",
+      "layer": "Business",
+      "folder": "Harbor"
+    },
+    {
+      "id": "claimant",
+      "type": "business-role",
+      "name": "Claimant",
+      "layer": "Business",
+      "folder": "Harbor"
+    },
+    {
+      "id": "claims-desk",
+      "type": "business-interface",
+      "name": "Claims desk",
+      "layer": "Business",
+      "folder": "Harbor"
+    },
+    {
+      "id": "product",
+      "type": "product",
+      "name": "Motor cover",
+      "layer": "Business",
+      "folder": "Harbor"
+    },
+    {
+      "id": "contract",
+      "type": "contract",
+      "name": "Policy wording",
+      "layer": "Business",
+      "folder": "Harbor"
+    },
+    {
+      "id": "claim-notice",
+      "type": "representation",
+      "name": "Claim notice",
+      "layer": "Business",
+      "folder": "Harbor"
+    },
+    {
+      "id": "office",
+      "type": "location",
+      "name": "Harbor office",
+      "layer": "Other",
+      "folder": "Harbor"
+    },
+    {
+      "id": "director",
+      "type": "stakeholder",
+      "name": "Claims director",
+      "layer": "Motivation",
+      "folder": "Harbor"
+    },
+    {
+      "id": "speed",
+      "type": "driver",
+      "name": "Settlement speed",
+      "layer": "Motivation",
+      "folder": "Harbor"
+    },
+    {
+      "id": "cycle-gap",
+      "type": "assessment",
+      "name": "Cycle time gap",
+      "layer": "Motivation",
+      "folder": "Harbor"
+    },
+    {
+      "id": "five-days",
+      "type": "goal",
+      "name": "Settle in five days",
+      "layer": "Motivation",
+      "folder": "Harbor"
+    },
+    {
+      "id": "faster",
+      "type": "outcome",
+      "name": "Faster settlement",
+      "layer": "Motivation",
+      "folder": "Harbor"
+    },
+    {
+      "id": "straight-through",
+      "type": "principle",
+      "name": "Straight-through handling",
+      "layer": "Motivation",
+      "folder": "Harbor"
+    },
+    {
+      "id": "record-claim",
+      "type": "requirement",
+      "name": "Record every claim",
+      "layer": "Motivation",
+      "folder": "Harbor"
+    },
+    {
+      "id": "retain",
+      "type": "constraint",
+      "name": "Retain claim data",
+      "layer": "Motivation",
+      "folder": "Harbor"
+    },
+    {
+      "id": "meaning",
+      "type": "meaning",
+      "name": "A claim is a request to pay",
+      "layer": "Motivation",
+      "folder": "Harbor"
+    },
+    {
+      "id": "trust",
+      "type": "value",
+      "name": "Trust",
+      "layer": "Motivation",
+      "folder": "Harbor"
+    },
+    {
+      "id": "staff",
+      "type": "resource",
+      "name": "Claims staff",
+      "layer": "Strategy",
+      "folder": "Harbor"
+    },
+    {
+      "id": "settlement",
+      "type": "capability",
+      "name": "Claims settlement",
+      "layer": "Strategy",
+      "folder": "Harbor"
+    },
+    {
+      "id": "digitize",
+      "type": "course-of-action",
+      "name": "Digitize intake",
+      "layer": "Strategy",
+      "folder": "Harbor"
+    },
+    {
+      "id": "claim-to-payment",
+      "type": "value-stream",
+      "name": "Claim to payment",
+      "layer": "Strategy",
+      "folder": "Harbor"
+    },
+    {
+      "id": "board",
+      "type": "business-collaboration",
+      "name": "Claims board",
+      "layer": "Business",
+      "folder": "Harbor"
+    },
+    {
+      "id": "register",
+      "type": "business-process",
+      "name": "Register claim",
+      "layer": "Business",
+      "folder": "Harbor"
+    },
+    {
+      "id": "handling",
+      "type": "business-function",
+      "name": "Case handling",
+      "layer": "Business",
+      "folder": "Harbor"
+    },
+    {
+      "id": "meeting",
+      "type": "business-interaction",
+      "name": "Settlement meeting",
+      "layer": "Business",
+      "folder": "Harbor"
+    },
+    {
+      "id": "submitted",
+      "type": "business-event",
+      "name": "Claim submitted",
+      "layer": "Business",
+      "folder": "Harbor"
+    },
+    {
+      "id": "claims-service",
+      "type": "business-service",
+      "name": "Claims handling",
+      "layer": "Business",
+      "folder": "Harbor"
+    },
+    {
+      "id": "claim-file",
+      "type": "business-object",
+      "name": "Claim file",
+      "layer": "Business",
+      "folder": "Harbor"
+    },
+    {
+      "id": "channel-choice",
+      "type": "or-junction",
+      "name": "Channel choice",
+      "layer": "Other",
+      "folder": "Harbor"
+    },
+    {
+      "id": "intake-split",
+      "type": "junction",
+      "name": "Intake split",
+      "layer": "Other",
+      "folder": "Harbor"
+    },
+    {
+      "id": "claims-system",
+      "type": "application-component",
+      "name": "Claims system",
+      "layer": "Application",
+      "folder": "Harbor"
+    },
+    {
+      "id": "document-store",
+      "type": "application-component",
+      "name": "Document store",
+      "layer": "Application",
+      "folder": "Harbor"
+    },
+    {
+      "id": "claims-api",
+      "type": "application-interface",
+      "name": "Claims API",
+      "layer": "Application",
+      "folder": "Harbor"
+    },
+    {
+      "id": "dialogue",
+      "type": "application-interaction",
+      "name": "Adjudication dialogue",
+      "layer": "Application",
+      "folder": "Harbor"
+    },
+    {
+      "id": "suite",
+      "type": "application-collaboration",
+      "name": "Claims application suite",
+      "layer": "Application",
+      "folder": "Harbor"
+    },
+    {
+      "id": "validate",
+      "type": "application-function",
+      "name": "Validate coverage",
+      "layer": "Application",
+      "folder": "Harbor"
+    },
+    {
+      "id": "register-case",
+      "type": "application-process",
+      "name": "Register claim case",
+      "layer": "Application",
+      "folder": "Harbor"
+    },
+    {
+      "id": "received",
+      "type": "application-event",
+      "name": "Claim received",
+      "layer": "Application",
+      "folder": "Harbor"
+    },
+    {
+      "id": "app-service",
+      "type": "application-service",
+      "name": "Claims application service",
+      "layer": "Application",
+      "folder": "Harbor"
+    },
+    {
+      "id": "claim-record",
+      "type": "data-object",
+      "name": "Claim record",
+      "layer": "Application",
+      "folder": "Harbor"
+    },
+    {
+      "id": "intake-join",
+      "type": "and-junction",
+      "name": "Intake join",
+      "layer": "Other",
+      "folder": "Harbor"
+    },
+    {
+      "id": "host",
+      "type": "node",
+      "name": "Claims host",
+      "layer": "Technology",
+      "folder": "Harbor"
+    },
+    {
+      "id": "server",
+      "type": "device",
+      "name": "App server",
+      "layer": "Technology",
+      "folder": "Harbor"
+    },
+    {
+      "id": "link",
+      "type": "path",
+      "name": "Data center link",
+      "layer": "Technology",
+      "folder": "Harbor"
+    },
+    {
+      "id": "network",
+      "type": "communication-network",
+      "name": "Harbor network",
+      "layer": "Technology",
+      "folder": "Harbor"
+    },
+    {
+      "id": "runtime",
+      "type": "system-software",
+      "name": "Claims runtime",
+      "layer": "Technology",
+      "folder": "Harbor"
+    },
+    {
+      "id": "cluster",
+      "type": "technology-collaboration",
+      "name": "Platform cluster",
+      "layer": "Technology",
+      "folder": "Harbor"
+    },
+    {
+      "id": "host-api",
+      "type": "technology-interface",
+      "name": "Host API",
+      "layer": "Technology",
+      "folder": "Harbor"
+    },
+    {
+      "id": "workload",
+      "type": "technology-function",
+      "name": "Run workload",
+      "layer": "Technology",
+      "folder": "Harbor"
+    },
+    {
+      "id": "deploy",
+      "type": "technology-process",
+      "name": "Deploy release",
+      "layer": "Technology",
+      "folder": "Harbor"
+    },
+    {
+      "id": "handshake",
+      "type": "technology-interaction",
+      "name": "Cluster handshake",
+      "layer": "Technology",
+      "folder": "Harbor"
+    },
+    {
+      "id": "node-started",
+      "type": "technology-event",
+      "name": "Node started",
+      "layer": "Technology",
+      "folder": "Harbor"
+    },
+    {
+      "id": "compute",
+      "type": "technology-service",
+      "name": "Compute service",
+      "layer": "Technology",
+      "folder": "Harbor"
+    },
+    {
+      "id": "package",
+      "type": "artifact",
+      "name": "Claims package",
+      "layer": "Technology",
+      "folder": "Harbor"
+    },
+    {
+      "id": "rack",
+      "type": "equipment",
+      "name": "Rack",
+      "layer": "Physical",
+      "folder": "Harbor"
+    },
+    {
+      "id": "hall",
+      "type": "facility",
+      "name": "Harbor data hall",
+      "layer": "Physical",
+      "folder": "Harbor"
+    },
+    {
+      "id": "power",
+      "type": "distribution-network",
+      "name": "Power feed",
+      "layer": "Physical",
+      "folder": "Harbor"
+    },
+    {
+      "id": "disk",
+      "type": "material",
+      "name": "Spare disk",
+      "layer": "Physical",
+      "folder": "Harbor"
+    },
+    {
+      "id": "intake-work",
+      "type": "work-package",
+      "name": "Intake digitization",
+      "layer": "Implementation & Migration",
+      "folder": "Harbor"
+    },
+    {
+      "id": "digital-intake",
+      "type": "deliverable",
+      "name": "Digital intake",
+      "layer": "Implementation & Migration",
+      "folder": "Harbor"
+    },
+    {
+      "id": "go-live",
+      "type": "implementation-event",
+      "name": "Go live",
+      "layer": "Implementation & Migration",
+      "folder": "Harbor"
+    },
+    {
+      "id": "live",
+      "type": "plateau",
+      "name": "Digital intake live",
+      "layer": "Implementation & Migration",
+      "folder": "Harbor"
+    },
+    {
+      "id": "manual-gap",
+      "type": "gap",
+      "name": "Manual intake gap",
+      "layer": "Implementation & Migration",
+      "folder": "Harbor"
+    },
+    {
+      "id": "enterprise",
+      "type": "grouping",
+      "name": "Harbor claims enterprise",
+      "layer": "Other",
+      "folder": "Harbor"
+    },
+    {
+      "id": "motivation-group",
+      "type": "grouping",
+      "name": "Motivation",
+      "layer": "Other",
+      "folder": "Harbor"
+    },
+    {
+      "id": "strategy-group",
+      "type": "grouping",
+      "name": "Strategy",
+      "layer": "Other",
+      "folder": "Harbor"
+    },
+    {
+      "id": "business-group",
+      "type": "grouping",
+      "name": "Business landscape",
+      "layer": "Other",
+      "folder": "Harbor"
+    },
+    {
+      "id": "application-group",
+      "type": "grouping",
+      "name": "Application landscape",
+      "layer": "Other",
+      "folder": "Harbor"
+    },
+    {
+      "id": "platform-group",
+      "type": "grouping",
+      "name": "Technology and physical landscape",
+      "layer": "Other",
+      "folder": "Harbor"
+    },
+    {
+      "id": "change-group",
+      "type": "grouping",
+      "name": "Change roadmap",
+      "layer": "Other",
+      "folder": "Harbor"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "customer-role",
+      "type": "assignment-relationship",
+      "source": "customer",
+      "target": "policyholder",
+      "name": "plays"
+    },
+    {
+      "id": "claimant-role",
+      "type": "specialization-relationship",
+      "source": "claimant",
+      "target": "policyholder",
+      "name": "is a"
+    },
+    {
+      "id": "customer-office",
+      "type": "association-relationship",
+      "source": "customer",
+      "target": "office"
+    },
+    {
+      "id": "product-contract",
+      "type": "composition-relationship",
+      "source": "product",
+      "target": "contract"
+    },
+    {
+      "id": "trust-product",
+      "type": "association-relationship",
+      "source": "trust",
+      "target": "product"
+    },
+    {
+      "id": "desk-service",
+      "type": "serving-relationship",
+      "source": "claims-desk",
+      "target": "claims-service"
+    },
+    {
+      "id": "notice-file",
+      "type": "association-relationship",
+      "source": "claim-notice",
+      "target": "claim-file"
+    },
+    {
+      "id": "contract-file",
+      "type": "association-relationship",
+      "source": "contract",
+      "target": "claim-file"
+    },
+    {
+      "id": "director-speed",
+      "type": "association-relationship",
+      "source": "director",
+      "target": "speed"
+    },
+    {
+      "id": "director-goal",
+      "type": "association-relationship",
+      "source": "director",
+      "target": "five-days"
+    },
+    {
+      "id": "director-assessment",
+      "type": "association-relationship",
+      "source": "director",
+      "target": "cycle-gap"
+    },
+    {
+      "id": "speed-goal",
+      "type": "influence-relationship",
+      "source": "speed",
+      "target": "five-days"
+    },
+    {
+      "id": "speed-assessment",
+      "type": "influence-relationship",
+      "source": "speed",
+      "target": "cycle-gap"
+    },
+    {
+      "id": "speed-outcome",
+      "type": "influence-relationship",
+      "source": "speed",
+      "target": "faster"
+    },
+    {
+      "id": "assessment-goal",
+      "type": "influence-relationship",
+      "source": "cycle-gap",
+      "target": "five-days"
+    },
+    {
+      "id": "assessment-outcome",
+      "type": "influence-relationship",
+      "source": "cycle-gap",
+      "target": "faster"
+    },
+    {
+      "id": "outcome-goal",
+      "type": "realization-relationship",
+      "source": "faster",
+      "target": "five-days"
+    },
+    {
+      "id": "principle-goal",
+      "type": "realization-relationship",
+      "source": "straight-through",
+      "target": "five-days"
+    },
+    {
+      "id": "principle-requirement",
+      "type": "influence-relationship",
+      "source": "straight-through",
+      "target": "record-claim"
+    },
+    {
+      "id": "constraint-requirement",
+      "type": "influence-relationship",
+      "source": "retain",
+      "target": "record-claim"
+    },
+    {
+      "id": "goal-requirement",
+      "type": "influence-relationship",
+      "source": "five-days",
+      "target": "record-claim"
+    },
+    {
+      "id": "meaning-trust",
+      "type": "association-relationship",
+      "source": "meaning",
+      "target": "trust"
+    },
+    {
+      "id": "meaning-file",
+      "type": "association-relationship",
+      "source": "meaning",
+      "target": "claim-file"
+    },
+    {
+      "id": "staff-capability",
+      "type": "assignment-relationship",
+      "source": "staff",
+      "target": "settlement"
+    },
+    {
+      "id": "staff-course",
+      "type": "serving-relationship",
+      "source": "staff",
+      "target": "digitize"
+    },
+    {
+      "id": "course-capability",
+      "type": "serving-relationship",
+      "source": "digitize",
+      "target": "settlement"
+    },
+    {
+      "id": "capability-goal",
+      "type": "realization-relationship",
+      "source": "settlement",
+      "target": "five-days"
+    },
+    {
+      "id": "capability-stream",
+      "type": "serving-relationship",
+      "source": "settlement",
+      "target": "claim-to-payment"
+    },
+    {
+      "id": "role-process",
+      "type": "assignment-relationship",
+      "source": "policyholder",
+      "target": "register"
+    },
+    {
+      "id": "board-process",
+      "type": "serving-relationship",
+      "source": "board",
+      "target": "register"
+    },
+    {
+      "id": "function-process",
+      "type": "composition-relationship",
+      "source": "handling",
+      "target": "register"
+    },
+    {
+      "id": "meeting-process",
+      "type": "triggering-relationship",
+      "source": "meeting",
+      "target": "register"
+    },
+    {
+      "id": "event-choice",
+      "type": "triggering-relationship",
+      "source": "submitted",
+      "target": "channel-choice"
+    },
+    {
+      "id": "choice-process",
+      "type": "triggering-relationship",
+      "source": "channel-choice",
+      "target": "register"
+    },
+    {
+      "id": "process-split",
+      "type": "triggering-relationship",
+      "source": "register",
+      "target": "intake-split"
+    },
+    {
+    "id": "split-function",
+    "type": "triggering-relationship",
+    "source": "intake-split",
+    "target": "handling"
+    },
+    {
+      "id": "process-function",
+      "type": "flow-relationship",
+      "source": "register",
+      "target": "handling"
+    },
+    {
+      "id": "process-service",
+      "type": "realization-relationship",
+      "source": "register",
+      "target": "claims-service"
+    },
+    {
+      "id": "service-process",
+      "type": "serving-relationship",
+      "source": "claims-service",
+      "target": "register"
+    },
+    {
+      "id": "process-file",
+      "type": "access-relationship",
+      "source": "register",
+      "target": "claim-file"
+    },
+    {
+      "id": "suite-system",
+      "type": "aggregation-relationship",
+      "source": "suite",
+      "target": "claims-system"
+    },
+    {
+      "id": "suite-store",
+      "type": "aggregation-relationship",
+      "source": "suite",
+      "target": "document-store"
+    },
+    {
+      "id": "system-api",
+      "type": "composition-relationship",
+      "source": "claims-system",
+      "target": "claims-api"
+    },
+    {
+      "id": "system-service",
+      "type": "realization-relationship",
+      "source": "claims-system",
+      "target": "app-service"
+    },
+    {
+      "id": "system-record",
+      "type": "access-relationship",
+      "source": "claims-system",
+      "target": "claim-record"
+    },
+    {
+      "id": "system-store",
+      "type": "flow-relationship",
+      "source": "claims-system",
+      "target": "document-store",
+      "name": "stores the notice"
+    },
+    {
+      "id": "api-service",
+      "type": "serving-relationship",
+      "source": "claims-api",
+      "target": "app-service"
+    },
+    {
+      "id": "function-record",
+      "type": "access-relationship",
+      "source": "validate",
+      "target": "claim-record"
+    },
+    {
+      "id": "case-function",
+      "type": "triggering-relationship",
+      "source": "register-case",
+      "target": "validate"
+    },
+    {
+      "id": "case-service",
+      "type": "realization-relationship",
+      "source": "register-case",
+      "target": "app-service"
+    },
+    {
+      "id": "event-join",
+      "type": "flow-relationship",
+      "source": "received",
+      "target": "intake-join"
+    },
+    {
+      "id": "join-case",
+      "type": "flow-relationship",
+      "source": "intake-join",
+      "target": "register-case"
+    },
+    {
+      "id": "event-case",
+      "type": "triggering-relationship",
+      "source": "received",
+      "target": "register-case"
+    },
+    {
+      "id": "dialogue-case",
+      "type": "flow-relationship",
+      "source": "dialogue",
+      "target": "register-case"
+    },
+    {
+      "id": "app-process",
+      "type": "serving-relationship",
+      "source": "app-service",
+      "target": "register"
+    },
+    {
+      "id": "host-server",
+      "type": "composition-relationship",
+      "source": "host",
+      "target": "server"
+    },
+    {
+      "id": "host-runtime",
+      "type": "composition-relationship",
+      "source": "host",
+      "target": "runtime"
+    },
+    {
+      "id": "host-compute",
+      "type": "realization-relationship",
+      "source": "host",
+      "target": "compute"
+    },
+    {
+      "id": "cluster-host",
+      "type": "aggregation-relationship",
+      "source": "cluster",
+      "target": "host"
+    },
+    {
+      "id": "server-link",
+      "type": "association-relationship",
+      "source": "server",
+      "target": "link"
+    },
+    {
+      "id": "link-network",
+      "type": "association-relationship",
+      "source": "link",
+      "target": "network"
+    },
+    {
+      "id": "package-runtime",
+      "type": "realization-relationship",
+      "source": "package",
+      "target": "runtime"
+    },
+    {
+      "id": "hostapi-compute",
+      "type": "serving-relationship",
+      "source": "host-api",
+      "target": "compute"
+    },
+    {
+      "id": "workload-compute",
+      "type": "serving-relationship",
+      "source": "workload",
+      "target": "compute"
+    },
+    {
+      "id": "deploy-compute",
+      "type": "realization-relationship",
+      "source": "deploy",
+      "target": "compute"
+    },
+    {
+      "id": "deploy-workload",
+      "type": "flow-relationship",
+      "source": "deploy",
+      "target": "workload"
+    },
+    {
+      "id": "deploy-package",
+      "type": "access-relationship",
+      "source": "deploy",
+      "target": "package"
+    },
+    {
+      "id": "handshake-workload",
+      "type": "flow-relationship",
+      "source": "handshake",
+      "target": "workload"
+    },
+    {
+      "id": "started-deploy",
+      "type": "triggering-relationship",
+      "source": "node-started",
+      "target": "deploy"
+    },
+    {
+      "id": "compute-host",
+      "type": "serving-relationship",
+      "source": "compute",
+      "target": "host"
+    },
+    {
+      "id": "rack-compute",
+      "type": "realization-relationship",
+      "source": "rack",
+      "target": "compute"
+    },
+    {
+      "id": "hall-rack",
+      "type": "composition-relationship",
+      "source": "hall",
+      "target": "rack"
+    },
+    {
+      "id": "hall-office",
+      "type": "association-relationship",
+      "source": "hall",
+      "target": "office"
+    },
+    {
+      "id": "power-disk",
+      "type": "association-relationship",
+      "source": "power",
+      "target": "disk"
+    },
+    {
+      "id": "work-deliverable",
+      "type": "realization-relationship",
+      "source": "intake-work",
+      "target": "digital-intake"
+    },
+    {
+      "id": "work-golive",
+      "type": "triggering-relationship",
+      "source": "intake-work",
+      "target": "go-live"
+    },
+    {
+      "id": "golive-work",
+      "type": "triggering-relationship",
+      "source": "go-live",
+      "target": "intake-work"
+    },
+    {
+      "id": "plateau-work",
+      "type": "triggering-relationship",
+      "source": "live",
+      "target": "intake-work"
+    },
+    {
+      "id": "deliverable-plateau",
+      "type": "realization-relationship",
+      "source": "digital-intake",
+      "target": "live"
+    },
+    {
+      "id": "plateau-goal",
+      "type": "realization-relationship",
+      "source": "live",
+      "target": "five-days"
+    },
+    {
+      "id": "manual-gap-plateau",
+      "type": "association-relationship",
+      "source": "manual-gap",
+      "target": "live"
+    },
+    {
+      "id": "manual-gap-goal",
+      "type": "association-relationship",
+      "source": "manual-gap",
+      "target": "five-days"
+    },
+    {
+      "id": "enterprise-aggregates-customer",
+      "type": "aggregation-relationship",
+      "source": "enterprise",
+      "target": "customer",
+      "draw": false
+    },
+    {
+      "id": "enterprise-aggregates-policyholder",
+      "type": "aggregation-relationship",
+      "source": "enterprise",
+      "target": "policyholder",
+      "draw": false
+    },
+    {
+      "id": "enterprise-aggregates-claimant",
+      "type": "aggregation-relationship",
+      "source": "enterprise",
+      "target": "claimant",
+      "draw": false
+    },
+    {
+      "id": "enterprise-aggregates-claims-desk",
+      "type": "aggregation-relationship",
+      "source": "enterprise",
+      "target": "claims-desk",
+      "draw": false
+    },
+    {
+      "id": "enterprise-aggregates-product",
+      "type": "aggregation-relationship",
+      "source": "enterprise",
+      "target": "product",
+      "draw": false
+    },
+    {
+      "id": "enterprise-aggregates-contract",
+      "type": "aggregation-relationship",
+      "source": "enterprise",
+      "target": "contract",
+      "draw": false
+    },
+    {
+      "id": "enterprise-aggregates-claim-notice",
+      "type": "aggregation-relationship",
+      "source": "enterprise",
+      "target": "claim-notice",
+      "draw": false
+    },
+    {
+      "id": "enterprise-aggregates-office",
+      "type": "aggregation-relationship",
+      "source": "enterprise",
+      "target": "office",
+      "draw": false
+    },
+    {
+      "id": "motivation-group-aggregates-director",
+      "type": "aggregation-relationship",
+      "source": "motivation-group",
+      "target": "director",
+      "draw": false
+    },
+    {
+      "id": "motivation-group-aggregates-speed",
+      "type": "aggregation-relationship",
+      "source": "motivation-group",
+      "target": "speed",
+      "draw": false
+    },
+    {
+      "id": "motivation-group-aggregates-cycle-gap",
+      "type": "aggregation-relationship",
+      "source": "motivation-group",
+      "target": "cycle-gap",
+      "draw": false
+    },
+    {
+      "id": "motivation-group-aggregates-five-days",
+      "type": "aggregation-relationship",
+      "source": "motivation-group",
+      "target": "five-days",
+      "draw": false
+    },
+    {
+      "id": "motivation-group-aggregates-faster",
+      "type": "aggregation-relationship",
+      "source": "motivation-group",
+      "target": "faster",
+      "draw": false
+    },
+    {
+      "id": "motivation-group-aggregates-straight-through",
+      "type": "aggregation-relationship",
+      "source": "motivation-group",
+      "target": "straight-through",
+      "draw": false
+    },
+    {
+      "id": "motivation-group-aggregates-record-claim",
+      "type": "aggregation-relationship",
+      "source": "motivation-group",
+      "target": "record-claim",
+      "draw": false
+    },
+    {
+      "id": "motivation-group-aggregates-retain",
+      "type": "aggregation-relationship",
+      "source": "motivation-group",
+      "target": "retain",
+      "draw": false
+    },
+    {
+      "id": "motivation-group-aggregates-meaning",
+      "type": "aggregation-relationship",
+      "source": "motivation-group",
+      "target": "meaning",
+      "draw": false
+    },
+    {
+      "id": "motivation-group-aggregates-trust",
+      "type": "aggregation-relationship",
+      "source": "motivation-group",
+      "target": "trust",
+      "draw": false
+    },
+    {
+      "id": "strategy-group-aggregates-staff",
+      "type": "aggregation-relationship",
+      "source": "strategy-group",
+      "target": "staff",
+      "draw": false
+    },
+    {
+      "id": "strategy-group-aggregates-settlement",
+      "type": "aggregation-relationship",
+      "source": "strategy-group",
+      "target": "settlement",
+      "draw": false
+    },
+    {
+      "id": "strategy-group-aggregates-digitize",
+      "type": "aggregation-relationship",
+      "source": "strategy-group",
+      "target": "digitize",
+      "draw": false
+    },
+    {
+      "id": "strategy-group-aggregates-claim-to-payment",
+      "type": "aggregation-relationship",
+      "source": "strategy-group",
+      "target": "claim-to-payment",
+      "draw": false
+    },
+    {
+      "id": "business-group-aggregates-board",
+      "type": "aggregation-relationship",
+      "source": "business-group",
+      "target": "board",
+      "draw": false
+    },
+    {
+      "id": "business-group-aggregates-register",
+      "type": "aggregation-relationship",
+      "source": "business-group",
+      "target": "register",
+      "draw": false
+    },
+    {
+      "id": "business-group-aggregates-handling",
+      "type": "aggregation-relationship",
+      "source": "business-group",
+      "target": "handling",
+      "draw": false
+    },
+    {
+      "id": "business-group-aggregates-meeting",
+      "type": "aggregation-relationship",
+      "source": "business-group",
+      "target": "meeting",
+      "draw": false
+    },
+    {
+      "id": "business-group-aggregates-submitted",
+      "type": "aggregation-relationship",
+      "source": "business-group",
+      "target": "submitted",
+      "draw": false
+    },
+    {
+      "id": "business-group-aggregates-claims-service",
+      "type": "aggregation-relationship",
+      "source": "business-group",
+      "target": "claims-service",
+      "draw": false
+    },
+    {
+      "id": "business-group-aggregates-claim-file",
+      "type": "aggregation-relationship",
+      "source": "business-group",
+      "target": "claim-file",
+      "draw": false
+    },
+    {
+      "id": "business-group-aggregates-channel-choice",
+      "type": "aggregation-relationship",
+      "source": "business-group",
+      "target": "channel-choice",
+      "draw": false
+    },
+    {
+      "id": "business-group-aggregates-intake-split",
+      "type": "aggregation-relationship",
+      "source": "business-group",
+      "target": "intake-split",
+      "draw": false
+    },
+    {
+      "id": "application-group-aggregates-suite",
+      "type": "aggregation-relationship",
+      "source": "application-group",
+      "target": "suite",
+      "draw": false
+    },
+    {
+      "id": "application-group-aggregates-claims-system",
+      "type": "aggregation-relationship",
+      "source": "application-group",
+      "target": "claims-system",
+      "draw": false
+    },
+    {
+      "id": "application-group-aggregates-document-store",
+      "type": "aggregation-relationship",
+      "source": "application-group",
+      "target": "document-store",
+      "draw": false
+    },
+    {
+      "id": "application-group-aggregates-claims-api",
+      "type": "aggregation-relationship",
+      "source": "application-group",
+      "target": "claims-api",
+      "draw": false
+    },
+    {
+      "id": "application-group-aggregates-dialogue",
+      "type": "aggregation-relationship",
+      "source": "application-group",
+      "target": "dialogue",
+      "draw": false
+    },
+    {
+      "id": "application-group-aggregates-validate",
+      "type": "aggregation-relationship",
+      "source": "application-group",
+      "target": "validate",
+      "draw": false
+    },
+    {
+      "id": "application-group-aggregates-register-case",
+      "type": "aggregation-relationship",
+      "source": "application-group",
+      "target": "register-case",
+      "draw": false
+    },
+    {
+      "id": "application-group-aggregates-received",
+      "type": "aggregation-relationship",
+      "source": "application-group",
+      "target": "received",
+      "draw": false
+    },
+    {
+      "id": "application-group-aggregates-app-service",
+      "type": "aggregation-relationship",
+      "source": "application-group",
+      "target": "app-service",
+      "draw": false
+    },
+    {
+      "id": "application-group-aggregates-claim-record",
+      "type": "aggregation-relationship",
+      "source": "application-group",
+      "target": "claim-record",
+      "draw": false
+    },
+    {
+      "id": "application-group-aggregates-intake-join",
+      "type": "aggregation-relationship",
+      "source": "application-group",
+      "target": "intake-join",
+      "draw": false
+    },
+    {
+      "id": "platform-group-aggregates-cluster",
+      "type": "aggregation-relationship",
+      "source": "platform-group",
+      "target": "cluster",
+      "draw": false
+    },
+    {
+      "id": "platform-group-aggregates-host",
+      "type": "aggregation-relationship",
+      "source": "platform-group",
+      "target": "host",
+      "draw": false
+    },
+    {
+      "id": "platform-group-aggregates-server",
+      "type": "aggregation-relationship",
+      "source": "platform-group",
+      "target": "server",
+      "draw": false
+    },
+    {
+      "id": "platform-group-aggregates-link",
+      "type": "aggregation-relationship",
+      "source": "platform-group",
+      "target": "link",
+      "draw": false
+    },
+    {
+      "id": "platform-group-aggregates-network",
+      "type": "aggregation-relationship",
+      "source": "platform-group",
+      "target": "network",
+      "draw": false
+    },
+    {
+      "id": "platform-group-aggregates-runtime",
+      "type": "aggregation-relationship",
+      "source": "platform-group",
+      "target": "runtime",
+      "draw": false
+    },
+    {
+      "id": "platform-group-aggregates-host-api",
+      "type": "aggregation-relationship",
+      "source": "platform-group",
+      "target": "host-api",
+      "draw": false
+    },
+    {
+      "id": "platform-group-aggregates-workload",
+      "type": "aggregation-relationship",
+      "source": "platform-group",
+      "target": "workload",
+      "draw": false
+    },
+    {
+      "id": "platform-group-aggregates-deploy",
+      "type": "aggregation-relationship",
+      "source": "platform-group",
+      "target": "deploy",
+      "draw": false
+    },
+    {
+      "id": "platform-group-aggregates-handshake",
+      "type": "aggregation-relationship",
+      "source": "platform-group",
+      "target": "handshake",
+      "draw": false
+    },
+    {
+      "id": "platform-group-aggregates-node-started",
+      "type": "aggregation-relationship",
+      "source": "platform-group",
+      "target": "node-started",
+      "draw": false
+    },
+    {
+      "id": "platform-group-aggregates-compute",
+      "type": "aggregation-relationship",
+      "source": "platform-group",
+      "target": "compute",
+      "draw": false
+    },
+    {
+      "id": "platform-group-aggregates-package",
+      "type": "aggregation-relationship",
+      "source": "platform-group",
+      "target": "package",
+      "draw": false
+    },
+    {
+      "id": "platform-group-aggregates-rack",
+      "type": "aggregation-relationship",
+      "source": "platform-group",
+      "target": "rack",
+      "draw": false
+    },
+    {
+      "id": "platform-group-aggregates-hall",
+      "type": "aggregation-relationship",
+      "source": "platform-group",
+      "target": "hall",
+      "draw": false
+    },
+    {
+      "id": "platform-group-aggregates-power",
+      "type": "aggregation-relationship",
+      "source": "platform-group",
+      "target": "power",
+      "draw": false
+    },
+    {
+      "id": "platform-group-aggregates-disk",
+      "type": "aggregation-relationship",
+      "source": "platform-group",
+      "target": "disk",
+      "draw": false
+    },
+    {
+      "id": "change-group-aggregates-intake-work",
+      "type": "aggregation-relationship",
+      "source": "change-group",
+      "target": "intake-work",
+      "draw": false
+    },
+    {
+      "id": "change-group-aggregates-digital-intake",
+      "type": "aggregation-relationship",
+      "source": "change-group",
+      "target": "digital-intake",
+      "draw": false
+    },
+    {
+      "id": "change-group-aggregates-go-live",
+      "type": "aggregation-relationship",
+      "source": "change-group",
+      "target": "go-live",
+      "draw": false
+    },
+    {
+      "id": "change-group-aggregates-live",
+      "type": "aggregation-relationship",
+      "source": "change-group",
+      "target": "live",
+      "draw": false
+    },
+    {
+      "id": "change-group-aggregates-manual-gap",
+      "type": "aggregation-relationship",
+      "source": "change-group",
+      "target": "manual-gap",
+      "draw": false
+    }
+  ],
+  "views": [
+    {
+      "name": "Context diagram",
+      "viewpoint": "layered",
+      "folder": "Harbor",
+      "documentation": "Customers, the motor product, and the Harbor office around the enterprise.",
+      "nodes": [
+        {
+          "element": "enterprise",
+          "x": 40,
+          "y": 40,
+          "w": 692,
+          "h": 218
+        },
+        {
+          "element": "customer",
+          "parent": "enterprise",
+          "x": 20,
+          "y": 46
+        },
+        {
+          "element": "policyholder",
+          "parent": "enterprise",
+          "x": 188,
+          "y": 46
+        },
+        {
+          "element": "claimant",
+          "parent": "enterprise",
+          "x": 356,
+          "y": 46
+        },
+        {
+          "element": "claims-desk",
+          "parent": "enterprise",
+          "x": 524,
+          "y": 46
+        },
+        {
+          "element": "product",
+          "parent": "enterprise",
+          "x": 20,
+          "y": 124
+        },
+        {
+          "element": "contract",
+          "parent": "enterprise",
+          "x": 188,
+          "y": 124
+        },
+        {
+          "element": "claim-notice",
+          "parent": "enterprise",
+          "x": 356,
+          "y": 124
+        },
+        {
+          "element": "office",
+          "parent": "enterprise",
+          "x": 524,
+          "y": 124
+        }
+      ]
+    },
+    {
+      "name": "Conceptual architecture",
+      "viewpoint": "layered",
+      "folder": "Harbor",
+      "documentation": "Why the enterprise settles claims faster, and the capability it invests in.",
+      "nodes": [
+        {
+          "element": "motivation-group",
+          "x": 40,
+          "y": 40,
+          "w": 860,
+          "h": 218
+        },
+        {
+          "element": "director",
+          "parent": "motivation-group",
+          "x": 20,
+          "y": 46
+        },
+        {
+          "element": "speed",
+          "parent": "motivation-group",
+          "x": 188,
+          "y": 46
+        },
+        {
+          "element": "cycle-gap",
+          "parent": "motivation-group",
+          "x": 356,
+          "y": 46
+        },
+        {
+          "element": "five-days",
+          "parent": "motivation-group",
+          "x": 524,
+          "y": 46
+        },
+        {
+          "element": "faster",
+          "parent": "motivation-group",
+          "x": 692,
+          "y": 46
+        },
+        {
+          "element": "straight-through",
+          "parent": "motivation-group",
+          "x": 20,
+          "y": 124
+        },
+        {
+          "element": "record-claim",
+          "parent": "motivation-group",
+          "x": 188,
+          "y": 124
+        },
+        {
+          "element": "retain",
+          "parent": "motivation-group",
+          "x": 356,
+          "y": 124
+        },
+        {
+          "element": "meaning",
+          "parent": "motivation-group",
+          "x": 524,
+          "y": 124
+        },
+        {
+          "element": "trust",
+          "parent": "motivation-group",
+          "x": 692,
+          "y": 124
+        },
+        {
+          "element": "strategy-group",
+          "x": 40,
+          "y": 294,
+          "w": 692,
+          "h": 140
+        },
+        {
+          "element": "staff",
+          "parent": "strategy-group",
+          "x": 20,
+          "y": 46
+        },
+        {
+          "element": "settlement",
+          "parent": "strategy-group",
+          "x": 188,
+          "y": 46
+        },
+        {
+          "element": "digitize",
+          "parent": "strategy-group",
+          "x": 356,
+          "y": 46
+        },
+        {
+          "element": "claim-to-payment",
+          "parent": "strategy-group",
+          "x": 524,
+          "y": 46
+        }
+      ]
+    },
+    {
+      "name": "Logical architecture",
+      "viewpoint": "layered",
+      "folder": "Harbor",
+      "documentation": "Business behavior, the applications that support it, the platform and premises underneath, and the change that digitizes intake.",
+      "nodes": [
+        {
+          "element": "business-group",
+          "x": 40,
+          "y": 40,
+          "w": 860,
+          "h": 218
+        },
+        {
+          "element": "board",
+          "parent": "business-group",
+          "x": 20,
+          "y": 46
+        },
+        {
+          "element": "register",
+          "parent": "business-group",
+          "x": 188,
+          "y": 46
+        },
+        {
+          "element": "handling",
+          "parent": "business-group",
+          "x": 356,
+          "y": 46
+        },
+        {
+          "element": "meeting",
+          "parent": "business-group",
+          "x": 524,
+          "y": 46
+        },
+        {
+          "element": "submitted",
+          "parent": "business-group",
+          "x": 692,
+          "y": 46
+        },
+        {
+          "element": "claims-service",
+          "parent": "business-group",
+          "x": 20,
+          "y": 124
+        },
+        {
+          "element": "claim-file",
+          "parent": "business-group",
+          "x": 188,
+          "y": 124
+        },
+        {
+          "element": "channel-choice",
+          "parent": "business-group",
+          "x": 356,
+          "y": 124
+        },
+        {
+          "element": "intake-split",
+          "parent": "business-group",
+          "x": 524,
+          "y": 124
+        },
+        {
+          "element": "application-group",
+          "x": 40,
+          "y": 294,
+          "w": 860,
+          "h": 296
+        },
+        {
+          "element": "suite",
+          "parent": "application-group",
+          "x": 20,
+          "y": 46
+        },
+        {
+          "element": "claims-system",
+          "parent": "application-group",
+          "x": 188,
+          "y": 46
+        },
+        {
+          "element": "document-store",
+          "parent": "application-group",
+          "x": 356,
+          "y": 46
+        },
+        {
+          "element": "claims-api",
+          "parent": "application-group",
+          "x": 524,
+          "y": 46
+        },
+        {
+          "element": "dialogue",
+          "parent": "application-group",
+          "x": 692,
+          "y": 46
+        },
+        {
+          "element": "validate",
+          "parent": "application-group",
+          "x": 20,
+          "y": 124
+        },
+        {
+          "element": "register-case",
+          "parent": "application-group",
+          "x": 188,
+          "y": 124
+        },
+        {
+          "element": "received",
+          "parent": "application-group",
+          "x": 356,
+          "y": 124
+        },
+        {
+          "element": "app-service",
+          "parent": "application-group",
+          "x": 524,
+          "y": 124
+        },
+        {
+          "element": "claim-record",
+          "parent": "application-group",
+          "x": 692,
+          "y": 124
+        },
+        {
+          "element": "intake-join",
+          "parent": "application-group",
+          "x": 20,
+          "y": 202
+        },
+        {
+          "element": "platform-group",
+          "x": 40,
+          "y": 626,
+          "w": 860,
+          "h": 374
+        },
+        {
+          "element": "cluster",
+          "parent": "platform-group",
+          "x": 20,
+          "y": 46
+        },
+        {
+          "element": "host",
+          "parent": "platform-group",
+          "x": 188,
+          "y": 46
+        },
+        {
+          "element": "server",
+          "parent": "platform-group",
+          "x": 356,
+          "y": 46
+        },
+        {
+          "element": "link",
+          "parent": "platform-group",
+          "x": 524,
+          "y": 46
+        },
+        {
+          "element": "network",
+          "parent": "platform-group",
+          "x": 692,
+          "y": 46
+        },
+        {
+          "element": "runtime",
+          "parent": "platform-group",
+          "x": 20,
+          "y": 124
+        },
+        {
+          "element": "host-api",
+          "parent": "platform-group",
+          "x": 188,
+          "y": 124
+        },
+        {
+          "element": "workload",
+          "parent": "platform-group",
+          "x": 356,
+          "y": 124
+        },
+        {
+          "element": "deploy",
+          "parent": "platform-group",
+          "x": 524,
+          "y": 124
+        },
+        {
+          "element": "handshake",
+          "parent": "platform-group",
+          "x": 692,
+          "y": 124
+        },
+        {
+          "element": "node-started",
+          "parent": "platform-group",
+          "x": 20,
+          "y": 202
+        },
+        {
+          "element": "compute",
+          "parent": "platform-group",
+          "x": 188,
+          "y": 202
+        },
+        {
+          "element": "package",
+          "parent": "platform-group",
+          "x": 356,
+          "y": 202
+        },
+        {
+          "element": "rack",
+          "parent": "platform-group",
+          "x": 524,
+          "y": 202
+        },
+        {
+          "element": "hall",
+          "parent": "platform-group",
+          "x": 692,
+          "y": 202
+        },
+        {
+          "element": "power",
+          "parent": "platform-group",
+          "x": 20,
+          "y": 280
+        },
+        {
+          "element": "disk",
+          "parent": "platform-group",
+          "x": 188,
+          "y": 280
+        },
+        {
+          "element": "change-group",
+          "x": 40,
+          "y": 1036,
+          "w": 860,
+          "h": 140
+        },
+        {
+          "element": "intake-work",
+          "parent": "change-group",
+          "x": 20,
+          "y": 46
+        },
+        {
+          "element": "digital-intake",
+          "parent": "change-group",
+          "x": 188,
+          "y": 46
+        },
+        {
+          "element": "go-live",
+          "parent": "change-group",
+          "x": 356,
+          "y": 46
+        },
+        {
+          "element": "live",
+          "parent": "change-group",
+          "x": 524,
+          "y": 46
+        },
+        {
+          "element": "manual-gap",
+          "parent": "change-group",
+          "x": 692,
+          "y": 46
+        }
+      ]
+    }
+  ]
+}
