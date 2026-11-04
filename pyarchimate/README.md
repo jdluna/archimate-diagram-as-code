@@ -78,7 +78,9 @@ give the line its own band.
 A large landscape uses the same grid inside a Grouping. The Harbor script
 nests each concern in one Grouping box. Relationships whose two ends are in
 the same group stay inside the box. A relationship that leaves the group is
-the one that needs a lane in the gap between groups.
+placed in the same column as its other end, so the line crosses only the gap
+between the boxes. A junction is a 20px circle centred on its cell. Drawn at
+the size of the other elements, it becomes a wide oval.
 
 ## Windows from Git Bash
 
