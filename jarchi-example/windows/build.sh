@@ -272,7 +272,10 @@ while IFS='|' read -r bundle_id bundle_version group artifact maven_version; do
   group_path="${group//.//}"
   src="${local_repo}/${group_path}/${artifact}/${maven_version}/${artifact}-${maven_version}.jar"
   dest="${local_repo}/p2/osgi/bundle/${bundle_id}/${bundle_version}/${bundle_id}-${bundle_version}.jar"
-  if [[ ! -f "$src" ]]; then
+  # A proxy 403 can leave an HTML page in the local repo. That file is not a jar,
+  # and copying it makes Tycho ask download.eclipse.org again.
+  if [[ ! -f "$src" ]] || [[ "$(head -c 2 "$src" 2>/dev/null || true)" != "PK" ]]; then
+    rm -f "$src"
     # Protect only the repository URL. Disabling every path conversion makes
     # java.exe miss Maven's launcher jar.
     MSYS2_ARG_CONV_EXCL="-DremoteRepositories=" mvn -s "$central_settings" -B -Dmaven.repo.local="$local_repo_win" \
@@ -281,19 +284,20 @@ while IFS='|' read -r bundle_id bundle_version group artifact maven_version; do
       -Dtransitive=false \
       -DremoteRepositories=https://repo.maven.apache.org/maven2
   fi
-  if [[ ! -f "$src" ]]; then
+  if [[ ! -f "$src" ]] || [[ "$(head -c 2 "$src" 2>/dev/null || true)" != "PK" ]]; then
     echo "Maven Central did not provide ${group}:${artifact}:${maven_version}." >&2
     echo "Expected file: $src" >&2
     exit 1
   fi
   mkdir -p "$(dirname "$dest")"
   cp -f "$src" "$dest"
+  rm -f "${dest}.lastUpdated" "${dest}.sha1" "${dest}.sha256"
 done < "$bundle_list"
 done
 
-# These target plug-ins are not the Maven Central files (com.google.guava
-# 30.1.0.v20221112-0806 is one). download.eclipse.org and the public mirrors
-# return HTTP 403 here, so the exact jars are stored in p2-jars/.
+# Exact bytes of every Archi 5.3 target plug-in. Maven Central copies are not
+# enough: a bad cache file makes Tycho download from download.eclipse.org, which
+# returns HTTP 403. p2-jars overwrites that cache.
 while IFS='|' read -r bundle_id bundle_version _expected_sha1 _expected_sha256; do
   bundle_id="${bundle_id//$'\r'/}"
   bundle_version="${bundle_version//$'\r'/}"
@@ -312,6 +316,10 @@ while IFS='|' read -r bundle_id bundle_version _expected_sha1 _expected_sha256; 
   cp -f "$bundled" "$dest"
   rm -f "${dest_dir}/"*.lastUpdated "${dest}.sha1" "${dest}.sha256"
 done < "$ROOT/target-bundles.txt"
+
+# A failed download records the plug-in in Tycho's index. The next build then
+# ignores the jar copied above and asks download.eclipse.org again.
+rm -f "$local_repo/.meta/p2-artifacts.properties" "$local_repo/.meta/p2-local-metadata.properties"
 
 (
   cd "$ARCHI_SRC"
