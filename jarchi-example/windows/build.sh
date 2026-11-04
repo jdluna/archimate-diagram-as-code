@@ -299,18 +299,18 @@ while IFS='|' read -r bundle_id bundle_version _expected_sha1 _expected_sha256; 
   bundle_version="${bundle_version//$'\r'/}"
   [[ -z "$bundle_id" || "$bundle_id" == \#* ]] && continue
   bundled="${ROOT}/p2-jars/${bundle_id}/${bundle_version}/${bundle_id}-${bundle_version}.jar"
-  dest="${local_repo}/p2/osgi/bundle/${bundle_id}/${bundle_version}/${bundle_id}-${bundle_version}.jar"
-  if [[ -f "$dest" ]]; then
-    continue
-  fi
+  dest_dir="${local_repo}/p2/osgi/bundle/${bundle_id}/${bundle_version}"
+  dest="${dest_dir}/${bundle_id}-${bundle_version}.jar"
   if [[ ! -f "$bundled" ]]; then
     echo "Missing ${bundled}." >&2
     echo "Copy the p2-jars folder with this script. The network returns HTTP 403 for that plug-in." >&2
     exit 1
   fi
-  mkdir -p "$(dirname "$dest")"
+  # A previous 403 can leave a bad file here. Tycho then skips the good jar and
+  # asks download.eclipse.org again, which is what fails org.w3c.dom.svg.
+  mkdir -p "$dest_dir"
   cp -f "$bundled" "$dest"
-  echo "Cached ${bundle_id} ${bundle_version}"
+  rm -f "${dest_dir}/"*.lastUpdated "${dest}.sha1" "${dest}.sha256"
 done < "$ROOT/target-bundles.txt"
 
 (
