@@ -10,6 +10,14 @@ Grouping boxes hold the elements on each view. pyArchimate nests a child with
 ``node.add(..., nested_rel_type="Aggregation")``, which writes the child inside
 the group and adds an aggregation from the grouping to that element.
 
+Inside each group the elements sit on a grid: one column per vertical story,
+with a gap between columns and an empty band between rows. A relationship
+whose ends share a row or a column is left straight. A relationship that
+would pass through another element is drawn through an empty band with
+bendpoints. A link that leaves a group travels in the gap between groups and
+enters the target from the side, so it does not cross the group title or a
+neighbouring element.
+
 Run from this pyarchimate folder. On Windows with Git Bash, follow README.md
 (pyenv-win for the Python version, then a venv). On macOS or Linux:
 
@@ -39,6 +47,7 @@ from pathlib import Path
 from lxml import etree
 from pyArchimate import ArchiType, Model
 from pyArchimate.relationship import check_valid_relationship
+from pyArchimate.view import Point
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "examples" / "out"
@@ -88,23 +97,37 @@ def relate(model: Model, rel_type: str, source, target, name: str = ""):
     return model.add_relationship(rel_type, source=source, target=target, name=name)
 
 
-def place_group(view, grouping, members, x: int, y: int, columns: int):
-    """Nest members inside a grouping box and aggregate each one to the group."""
-    rows = (len(members) + columns - 1) // columns
-    width = 20 + (columns - 1) * 168 + 148 + 20
-    height = 46 + rows * 78 + 16
+# Same grid as the claims example. 210px columns leave a 62px gap beside a
+# 148px element. 150px rows leave a 92px band between rows for bendpoints.
+W = 148
+H = 58
+COL = 210
+ROW = 220
+PAD_X = 28
+PAD_TOP = 52
+PAD_BOTTOM = 36
+
+
+def place_group(view, grouping, positions, x: int, y: int):
+    """Nest each element at its own column and row inside the grouping box.
+
+    ``positions`` maps an element to ``(column, row)``. Columns line up across
+    groups when every group starts at the same x.
+    """
+    columns = max(col for col, _row in positions.values()) + 1
+    rows = max(row for _col, row in positions.values()) + 1
+    width = PAD_X * 2 + (columns - 1) * COL + W
+    height = PAD_TOP + (rows - 1) * ROW + H + PAD_BOTTOM
     box = view.add(grouping, x=x, y=y, w=width, h=height)
     nodes = {grouping: box}
-    for index, member in enumerate(members):
-        check_valid_relationship("Aggregation", grouping.type, member.type, raise_flg=True)
-        column = index % columns
-        row = index // columns
-        nodes[member] = box.add(
-            member,
-            x=x + 20 + column * 168,
-            y=y + 46 + row * 78,
-            w=148,
-            h=58,
+    for element, (col, row) in positions.items():
+        check_valid_relationship("Aggregation", grouping.type, element.type, raise_flg=True)
+        nodes[element] = box.add(
+            element,
+            x=x + PAD_X + col * COL,
+            y=y + PAD_TOP + row * ROW,
+            w=W,
+            h=H,
             nested_rel_type="Aggregation",
         )
     return nodes, height
@@ -112,9 +135,111 @@ def place_group(view, grouping, members, x: int, y: int, columns: int):
 
 def draw(view, relationships, nodes):
     """Draw every relationship whose two ends are both on this view."""
+    drawn = {}
     for relationship in relationships:
         if relationship.source in nodes and relationship.target in nodes:
-            view.add_connection(relationship)
+            drawn[relationship] = view.add_connection(relationship)
+    return drawn
+
+
+def between(drawn, source, target):
+    """Return the connection already drawn from source to target."""
+    for relationship, connection in drawn.items():
+        if relationship.source is source and relationship.target is target:
+            return connection
+    raise KeyError(f"No connection from {source.name} to {target.name}")
+
+
+def lane(connection, y: float, source_x: float | None = None, target_x: float | None = None):
+    """Route a connection across an empty horizontal band."""
+    connection.add_bendpoint(
+        Point(connection.source.cx if source_x is None else source_x, y),
+        Point(connection.target.cx if target_x is None else target_x, y),
+    )
+
+
+def band(node, slot: int = 0) -> float:
+    """Y of an empty lane just below this element. Slots keep parallel lines apart."""
+    return node.y + node.h + 16 + slot * 22
+
+
+def enter_from_side(connection, gap_y: float, group):
+    """Bring a cross-group line through the gap and into the target from the left.
+
+    The target has to be the leftmost element of its row. The last segment then
+    crosses only the group's left padding.
+    """
+    source = connection.source
+    target = connection.target
+    outside = group.x - 36
+    connection.add_bendpoint(
+        Point(source.cx, gap_y),
+        Point(outside, gap_y),
+        Point(outside, target.cy),
+    )
+
+
+def _contains(node, x: float, y: float) -> bool:
+    return node.x <= x <= node.x + node.w and node.y <= y <= node.y + node.h
+
+
+def _segment_hits_rect(x1, y1, x2, y2, left, top, right, bottom) -> bool:
+    """True when the open segment passes through the rectangle."""
+    dx = x2 - x1
+    dy = y2 - y1
+    p = (-dx, dx, -dy, dy)
+    q = (x1 - left, right - x1, y1 - top, bottom - y1)
+    u1, u2 = 0.0, 1.0
+    for pi, qi in zip(p, q):
+        if pi == 0:
+            if qi < 0:
+                return False
+            continue
+        t = qi / pi
+        if pi < 0:
+            if t > u2:
+                return False
+            u1 = max(u1, t)
+        else:
+            if t < u1:
+                return False
+            u2 = min(u2, t)
+    return u1 < u2 and u2 > 0.02 and u1 < 0.98
+
+
+def check_routes(view) -> None:
+    """Fail when a drawn line passes through an element that is not an end.
+
+    A segment that starts or ends inside a grouping box is leaving or entering
+    that box. The box itself is not a crossing. Sibling elements still are.
+    """
+    nodes = []
+
+    def walk(items):
+        for node in items:
+            nodes.append(node)
+            walk(node.nodes)
+
+    walk(view.nodes)
+    missing = []
+    for connection in view.conns:
+        points = [(connection.source.cx, connection.source.cy)]
+        points.extend((point.x, point.y) for point in connection.bendpoints)
+        points.append((connection.target.cx, connection.target.cy))
+        for (x1, y1), (x2, y2) in zip(points, points[1:]):
+            for node in nodes:
+                if node is connection.source or node is connection.target:
+                    continue
+                if _contains(node, x1, y1) or _contains(node, x2, y2):
+                    continue
+                if _segment_hits_rect(
+                    x1, y1, x2, y2, node.x + 2, node.y + 2, node.x + node.w - 2, node.y + node.h - 2
+                ):
+                    missing.append(
+                        f"{view.name}: line {connection.source.name} -> {connection.target.name} crosses {node.name}"
+                    )
+    if missing:
+        raise SystemExit("\n".join(dict.fromkeys(missing)))
 
 
 def count_nodes(view) -> int:
@@ -323,15 +448,26 @@ def build() -> Model:
         desc="Customers, the motor product, and the Harbor office around the enterprise.",
         folder=VIEWS,
     )
+    # Customer sits above the office. Policyholder sits between customer and claimant.
+    # The product sits beside the contract.
     context_nodes, _ = place_group(
         context,
         enterprise,
-        [customer, policyholder, claimant, claims_desk, product, contract, claim_notice, office],
+        {
+            customer: (0, 0),
+            policyholder: (1, 0),
+            claimant: (2, 0),
+            claims_desk: (3, 0),
+            office: (0, 1),
+            product: (1, 1),
+            contract: (2, 1),
+            claim_notice: (3, 1),
+        },
         x=40,
         y=40,
-        columns=4,
     )
     draw(context, relationships, context_nodes)
+    check_routes(context)
 
     conceptual = model.add(
         ArchiType.View,
@@ -342,21 +478,44 @@ def build() -> Model:
     motivation_nodes, motivation_height = place_group(
         conceptual,
         motivation_group,
-        [director, speed, cycle_gap, five_days, faster, straight_through, record_claim, retain, meaning, trust],
+        {
+            director: (0, 0),
+            speed: (1, 0),
+            cycle_gap: (2, 0),
+            faster: (3, 0),
+            five_days: (0, 1),
+            straight_through: (1, 1),
+            record_claim: (2, 1),
+            meaning: (3, 1),
+            trust: (4, 1),
+            retain: (0, 2),
+        },
         x=40,
         y=40,
-        columns=5,
     )
-    strategy_nodes, _ = place_group(
+    strategy_nodes, _strategy_height = place_group(
         conceptual,
         strategy_group,
-        [staff, settlement, digitize, claim_to_payment],
+        {
+            settlement: (0, 0),
+            staff: (1, 0),
+            claim_to_payment: (2, 0),
+            digitize: (0, 1),
+        },
         x=40,
-        y=40 + motivation_height + 36,
-        columns=4,
+        y=40 + motivation_height + 80,
     )
     conceptual_nodes = {**motivation_nodes, **strategy_nodes}
-    draw(conceptual, relationships, conceptual_nodes)
+    conceptual_lines = draw(conceptual, relationships, conceptual_nodes)
+    # Same-row links that have another element between their ends.
+    lane(between(conceptual_lines, director, cycle_gap), band(motivation_nodes[director], 0))
+    lane(between(conceptual_lines, speed, faster), band(motivation_nodes[speed], 1))
+    lane(between(conceptual_lines, five_days, record_claim), band(motivation_nodes[five_days], 0))
+    lane(between(conceptual_lines, staff, digitize), band(strategy_nodes[staff], 0))
+    lane(between(conceptual_lines, settlement, claim_to_payment), band(strategy_nodes[settlement], 1))
+    gap_y = motivation_nodes[motivation_group].y + motivation_height + 40
+    enter_from_side(between(conceptual_lines, settlement, five_days), gap_y, strategy_nodes[strategy_group])
+    check_routes(conceptual)
 
     logical = model.add(
         ArchiType.View,
@@ -371,70 +530,127 @@ def build() -> Model:
     business_nodes, business_height = place_group(
         logical,
         business_group,
-        [board, register, handling, meeting, submitted, claims_service, claim_file, channel_choice, intake_split],
+        {
+            submitted: (1, 0),
+            channel_choice: (2, 0),
+            handling: (3, 0),
+            claim_file: (4, 0),
+            board: (5, 0),
+            meeting: (6, 0),
+            intake_split: (1, 1),
+            register: (2, 1),
+            claims_service: (3, 1),
+        },
         x=40,
         y=cursor_y,
-        columns=5,
     )
-    cursor_y += business_height + 36
+    cursor_y += business_height + 80
     application_nodes, application_height = place_group(
         logical,
         application_group,
-        [
-            suite,
-            claims_system,
-            document_store,
-            claims_api,
-            dialogue,
-            validate,
-            register_case,
-            received,
-            app_service,
-            claim_record,
-            intake_join,
-        ],
+        {
+            app_service: (0, 0),
+            claims_system: (1, 0),
+            claims_api: (2, 0),
+            suite: (3, 0),
+            register_case: (0, 1),
+            claim_record: (1, 1),
+            validate: (2, 1),
+            document_store: (3, 1),
+            dialogue: (0, 2),
+            intake_join: (1, 2),
+            received: (2, 2),
+        },
         x=40,
         y=cursor_y,
-        columns=5,
     )
-    cursor_y += application_height + 36
+    cursor_y += application_height + 80
     platform_nodes, platform_height = place_group(
         logical,
         platform_group,
-        [
-            cluster,
-            host,
-            server,
-            link,
-            network,
-            runtime,
-            host_api,
-            workload,
-            deploy,
-            handshake,
-            node_started,
-            compute,
-            package,
-            rack,
-            hall,
-            power,
-            disk,
-        ],
+        {
+            cluster: (0, 0),
+            host: (1, 0),
+            server: (2, 0),
+            runtime: (3, 0),
+            package: (4, 0),
+            host_api: (0, 1),
+            compute: (1, 1),
+            link: (2, 1),
+            network: (3, 1),
+            workload: (4, 1),
+            deploy: (5, 1),
+            rack: (1, 2),
+            handshake: (4, 2),
+            node_started: (5, 2),
+            hall: (1, 3),
+            power: (4, 3),
+            disk: (5, 3),
+        },
         x=40,
         y=cursor_y,
-        columns=5,
     )
-    cursor_y += platform_height + 36
+    cursor_y += platform_height + 80
     change_nodes, _ = place_group(
         logical,
         change_group,
-        [intake_work, digital_intake, go_live, live, manual_gap],
+        {
+            go_live: (0, 0),
+            intake_work: (1, 0),
+            digital_intake: (2, 0),
+            live: (3, 0),
+            manual_gap: (4, 0),
+        },
         x=40,
         y=cursor_y,
-        columns=5,
     )
     logical_nodes = {**business_nodes, **application_nodes, **platform_nodes, **change_nodes}
-    draw(logical, relationships, logical_nodes)
+    logical_lines = draw(logical, relationships, logical_nodes)
+    # Bands sit in the gap between two rows, so a vertical drop stops before the next element.
+    lane(between(logical_lines, handling, register), band(business_nodes[handling], 0))
+    lane(
+        between(logical_lines, register, handling),
+        band(business_nodes[handling], 1),
+        source_x=business_nodes[register].cx + 18,
+        target_x=business_nodes[handling].cx + 18,
+    )
+    lane(between(logical_lines, intake_split, handling), band(business_nodes[handling], 2))
+    lane(between(logical_lines, register, claim_file), band(business_nodes[claim_file], 3))
+    lane(between(logical_lines, board, register), band(business_nodes[board], 4))
+    lane(between(logical_lines, meeting, register), band(business_nodes[meeting], 5))
+    lane(
+        between(logical_lines, claims_service, register),
+        band(business_nodes[channel_choice], 6),
+        source_x=business_nodes[claims_service].cx - 18,
+        target_x=business_nodes[register].cx - 18,
+    )
+    lane(between(logical_lines, suite, claims_system), band(application_nodes[suite], 0))
+    lane(between(logical_lines, claims_api, app_service), band(application_nodes[claims_api], 1))
+    lane(between(logical_lines, claims_system, document_store), band(application_nodes[claims_system], 2))
+    lane(between(logical_lines, register_case, validate), band(application_nodes[register_case], 0))
+    lane(between(logical_lines, received, register_case), band(application_nodes[register_case], 1))
+    lane(between(logical_lines, intake_join, register_case), band(application_nodes[register_case], 2))
+    lane(between(logical_lines, host, runtime), band(platform_nodes[host], 0))
+    lane(
+        between(logical_lines, compute, host),
+        band(platform_nodes[host], 1),
+        source_x=platform_nodes[compute].cx + 18,
+        target_x=platform_nodes[host].cx + 18,
+    )
+    lane(between(logical_lines, deploy, package), band(platform_nodes[package], 2))
+    lane(between(logical_lines, workload, compute), band(platform_nodes[workload], 0))
+    lane(between(logical_lines, deploy, compute), band(platform_nodes[deploy], 1))
+    # The return triggering sits beside the straight one.
+    lane(
+        between(logical_lines, go_live, intake_work),
+        band(change_nodes[go_live], 0),
+        source_x=change_nodes[go_live].cx - 18,
+        target_x=change_nodes[intake_work].cx - 18,
+    )
+    lane(between(logical_lines, live, intake_work), band(change_nodes[live], 1))
+    app_gap = application_nodes[application_group].y - 40
+    lane(between(logical_lines, app_service, register), app_gap)
+    check_routes(logical)
 
     present = {element.type for element in model.elements}
     missing = sorted(ELEMENT_TYPES - present)
