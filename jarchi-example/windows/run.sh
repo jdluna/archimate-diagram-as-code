@@ -4,8 +4,8 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-DIST="$ROOT/dist"
 EXAMPLE="$(cd "$ROOT/.." && pwd)"
+DIST="$EXAMPLE/dist"
 JSON="${1:-$EXAMPLE/model/claims.json}"
 OUT="${2:-$ROOT/out/claims-handling.archimate}"
 SCRIPT="$EXAMPLE/scripts/create-from-json.ajs"

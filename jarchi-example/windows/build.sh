@@ -5,7 +5,8 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-DIST="$ROOT/dist"
+EXAMPLE="$(cd "$ROOT/.." && pwd)"
+DIST="$EXAMPLE/dist"
 
 if [[ -f "$ROOT/local.env" ]]; then
   set -a

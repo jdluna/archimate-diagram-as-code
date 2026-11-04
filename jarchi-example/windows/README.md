@@ -240,7 +240,7 @@ sdk use maven 3.9.6
    `1.7.0.qualifier` in the manifest.
 4. Runs `mvn -B -Drevision=5.3.0-SNAPSHOT clean package -DskipTests -P'!tests'`
    from `ARCHI_SRC`, using the `mvn` and `JAVA_HOME` from this window.
-5. Copies the three jars into `windows/dist`.
+5. Copies the three jars into `jarchi-example/dist`, the same folder the macOS build uses.
 
 The first Maven run downloads the Eclipse 2023-06 dependencies declared by
 Archi 5.3.0. Later runs reuse the local Maven cache.
@@ -285,7 +285,7 @@ In that same window:
 
 `run.sh` reads `ARCHI_HOME` and does the following:
 
-1. Copies `dist/com.archimatetool.script*.jar` to `%APPDATA%\Archi\dropins`,
+1. Copies `jarchi-example/dist/com.archimatetool.script*.jar` to `%APPDATA%\Archi\dropins`,
    which is the dropins folder Archi 5.3.0 reads on Windows.
 2. Creates `%USERPROFILE%\Documents\Archi\scripts` when that folder is missing.
    jArchi's GraalJS engine expects it.
