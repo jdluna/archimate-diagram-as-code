@@ -189,7 +189,70 @@ central_pom="$(mktemp -d)/pom.xml"
 local_repo="$(maven_local_repo)"
 local_repo_win="$(cygpath -m "$local_repo")"
 echo "Maven local repository: $local_repo"
-mvn -f "$central_pom" -B -Dmaven.repo.local="$local_repo_win" dependency:resolve
+# org.glassfish:javax.el declares https://maven.java.net as a repository.
+# That host is retired and its certificate fails with "validity check failed".
+# This settings file sends every lookup to Maven Central. It is used only for
+# this prefetch, so the Archi build still uses the normal Maven settings.
+central_settings="$(dirname "$central_pom")/settings.xml"
+{
+  user_settings=""
+  for candidate in "$HOME/.m2/settings.xml" "${USERPROFILE:-}/.m2/settings.xml"; do
+    [[ -z "$candidate" ]] && continue
+    candidate="$(cygpath -u "$candidate" 2>/dev/null || true)"
+    if [[ -n "$candidate" && -f "$candidate" ]]; then
+      user_settings="$candidate"
+      break
+    fi
+  done
+  print_mirror() {
+    printf '%s\n' \
+      '    <mirror>' \
+      '      <id>maven-central-only</id>' \
+      '      <url>https://repo.maven.apache.org/maven2</url>' \
+      '      <mirrorOf>*</mirrorOf>' \
+      '    </mirror>'
+  }
+  if [[ -z "$user_settings" ]]; then
+    printf '%s\n' '<settings>' '  <mirrors>'
+    print_mirror
+    printf '%s\n' '  </mirrors>' '</settings>'
+  elif grep -q '<mirrors[[:space:]]*/>' "$user_settings"; then
+    while IFS= read -r line || [[ -n "$line" ]]; do
+      line="${line//$'\r'/}"
+      if [[ "$line" == *"<mirrors"*"/>"* && -z "${mirror_done:-}" ]]; then
+        printf '%s\n' '  <mirrors>'
+        print_mirror
+        printf '%s\n' '  </mirrors>'
+        mirror_done=1
+      else
+        printf '%s\n' "$line"
+      fi
+    done < "$user_settings"
+  elif grep -q '<mirrors>' "$user_settings"; then
+    while IFS= read -r line || [[ -n "$line" ]]; do
+      line="${line//$'\r'/}"
+      printf '%s\n' "$line"
+      if [[ "$line" == *"<mirrors>"* && -z "${mirror_done:-}" ]]; then
+        print_mirror
+        mirror_done=1
+      fi
+    done < "$user_settings"
+  else
+    while IFS= read -r line || [[ -n "$line" ]]; do
+      line="${line//$'\r'/}"
+      if [[ "$line" == *"</settings>"* && -z "${mirror_done:-}" ]]; then
+        printf '%s\n' '  <mirrors>'
+        print_mirror
+        printf '%s\n' '  </mirrors>'
+        mirror_done=1
+      fi
+      printf '%s\n' "$line"
+    done < "$user_settings"
+  fi
+} > "$central_settings"
+unset -f print_mirror
+unset mirror_done
+mvn -f "$central_pom" -s "$central_settings" -B -Dmaven.repo.local="$local_repo_win" dependency:resolve
 while IFS='|' read -r bundle_id bundle_version group artifact maven_version; do
   bundle_id="${bundle_id//$'\r'/}"
   bundle_version="${bundle_version//$'\r'/}"
