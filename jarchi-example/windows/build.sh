@@ -234,6 +234,32 @@ central_settings="$(mktemp -d)/settings.xml"
 } > "$central_settings"
 unset -f print_mirror
 unset mirror_done
+# These Eclipse plug-ins are not in the Maven Central mirror list. Their p2
+# qualifier (3.11.100.v20221006-1531) is the same jar Maven Central publishes
+# as org.eclipse.platform:org.eclipse.osgi.services:3.11.100. download.eclipse.org
+# returns 403 for that jar, which stops the draw2d compile.
+platform_pom="$(mktemp -d)/pom.xml"
+{
+  echo '<project>'
+  echo '  <modelVersion>4.0.0</modelVersion>'
+  echo '  <groupId>local</groupId>'
+  echo '  <artifactId>eclipse-platform-bundles</artifactId>'
+  echo '  <version>1</version>'
+  echo '  <dependencies>'
+  while IFS='|' read -r bundle_id bundle_version group artifact maven_version; do
+    bundle_id="${bundle_id//$'\r'/}"
+    bundle_version="${bundle_version//$'\r'/}"
+    group="${group//$'\r'/}"
+    artifact="${artifact//$'\r'/}"
+    maven_version="${maven_version//$'\r'/}"
+    [[ -z "$bundle_id" || "$bundle_id" == \#* ]] && continue
+    echo "    <dependency><groupId>${group}</groupId><artifactId>${artifact}</artifactId><version>${maven_version}</version></dependency>"
+  done < "$ROOT/eclipse-platform-bundles.txt"
+  echo '  </dependencies>'
+  echo '</project>'
+} > "$platform_pom"
+mvn -f "$platform_pom" -s "$central_settings" -B -Dmaven.repo.local="$local_repo_win" dependency:resolve
+for bundle_list in "$ROOT/central-bundles.txt" "$ROOT/eclipse-platform-bundles.txt"; do
 while IFS='|' read -r bundle_id bundle_version group artifact maven_version; do
   bundle_id="${bundle_id//$'\r'/}"
   bundle_version="${bundle_version//$'\r'/}"
@@ -260,7 +286,8 @@ while IFS='|' read -r bundle_id bundle_version group artifact maven_version; do
   fi
   mkdir -p "$(dirname "$dest")"
   cp -f "$src" "$dest"
-done < "$ROOT/central-bundles.txt"
+done < "$bundle_list"
+done
 
 (
   cd "$ARCHI_SRC"
