@@ -291,10 +291,57 @@ while IFS='|' read -r bundle_id bundle_version group artifact maven_version; do
 done < "$bundle_list"
 done
 
+# Orbit and other target plug-ins, including javax.annotation 1.3.5.v20230504-0748,
+# are not on Maven Central. download.eclipse.org returns HTTP 403, so these come
+# from public Eclipse mirrors. A jar already in the local p2 cache is kept.
+file_sha1() {
+  if command -v sha1sum >/dev/null 2>&1; then
+    sha1sum "$1" | awk '{print $1}'
+  else
+    openssl dgst -sha1 "$1" | awk '{print $NF}'
+  fi
+}
+mirror_roots=(
+  "https://ftp.osuosl.org/pub/eclipse/releases/2023-06/202306141000/plugins"
+  "https://mirror.csclub.uwaterloo.ca/eclipse/releases/2023-06/202306141000/plugins"
+  "https://ftp.fau.de/eclipse/releases/2023-06/202306141000/plugins"
+)
+while IFS='|' read -r bundle_id bundle_version expected_sha; do
+  bundle_id="${bundle_id//$'\r'/}"
+  bundle_version="${bundle_version//$'\r'/}"
+  expected_sha="${expected_sha//$'\r'/}"
+  [[ -z "$bundle_id" || "$bundle_id" == \#* ]] && continue
+  dest="${local_repo}/p2/osgi/bundle/${bundle_id}/${bundle_version}/${bundle_id}-${bundle_version}.jar"
+  if [[ -f "$dest" && "$(file_sha1 "$dest")" == "$expected_sha" ]]; then
+    continue
+  fi
+  tmp="$(mktemp)"
+  tmp_arg="$(cygpath -m "$tmp")"
+  got=""
+  for mirror_root in "${mirror_roots[@]}"; do
+    url="${mirror_root}/${bundle_id}_${bundle_version}.jar"
+    if MSYS_NO_PATHCONV=1 curl -fsSL --retry 2 --max-time 120 -o "$tmp_arg" "$url"; then
+      if [[ "$(file_sha1 "$tmp")" == "$expected_sha" ]]; then
+        mkdir -p "$(dirname "$dest")"
+        cp -f "$tmp" "$dest"
+        echo "Cached ${bundle_id} ${bundle_version}"
+        got=1
+        break
+      fi
+    fi
+  done
+  rm -f "$tmp"
+  if [[ -z "$got" ]]; then
+    echo "Could not download ${bundle_id} ${bundle_version}." >&2
+    echo "download.eclipse.org returns HTTP 403, and the Eclipse mirrors did not return that jar." >&2
+    exit 1
+  fi
+done < "$ROOT/target-bundles.txt"
+
 (
   cd "$ARCHI_SRC"
-  # eclipse.p2.mirrors=false keeps p2 on download.eclipse.org. A mirror that
-  # returns 403 is what fails the draw2d compile.
+  # eclipse.p2.mirrors=false keeps p2 off mirror sites that return 403.
+  # The plug-in jars were copied into the local p2 cache above.
   mvn -B -Dmaven.repo.local="$local_repo_win" -Drevision=5.3.0-SNAPSHOT -Declipse.p2.mirrors=false clean package -DskipTests -P'!tests'
 )
 
