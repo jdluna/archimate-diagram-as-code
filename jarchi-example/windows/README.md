@@ -28,39 +28,53 @@ In Git Bash that path is `/c/Users/you/Archi`. That value is `ARCHI_HOME`.
 The installed application is the program that runs the script. The compiler
 reads a second tree, the Archi source at tag `release_5.3.0`.
 
-Download the tag zip and unzip it:
+Put that tree in this folder:
+
+```text
+jarchi-example/windows/src/archi-release_5.3.0
+```
+
+That path is `ARCHI_SRC`. The folder contains `pom.xml` with
+`<revision>5.3.0-SNAPSHOT</revision>`.
+
+If you already unpacked the tag zip, copy the `archi-release_5.3.0` folder
+into `windows/src`. The zip is:
 
 https://github.com/archimatetool/archi/archive/refs/tags/release_5.3.0.zip
 
-The zip unpacks to a folder named `archi-release_5.3.0`. That folder contains
-`pom.xml` with `<revision>5.3.0-SNAPSHOT</revision>`. In Git Bash, that path
-is `ARCHI_SRC`.
-
-With git, the same tree is:
+From this `windows` directory, git clones into the same place:
 
 ```bash
-git clone --branch release_5.3.0 --depth 1 https://github.com/archimatetool/archi.git
+mkdir -p src
+git clone --branch release_5.3.0 --depth 1 https://github.com/archimatetool/archi.git src/archi-release_5.3.0
 ```
 
 ## 3. Download jArchi 1.7.0
 
-Download the tag zip and unzip it:
+Put the plug-in source next to the Archi source:
+
+```text
+jarchi-example/windows/src/archi-scripting-plugin-1.7.0
+```
+
+That path is `JARCHI_SRC`. It contains `com.archimatetool.script`,
+`com.archimatetool.script.commandline`, and `com.archimatetool.script.nashorn`.
+The script manifest says `Bundle-Version: 1.7.0.qualifier`.
+
+If you already unpacked the tag zip, copy the
+`archi-scripting-plugin-1.7.0` folder into `windows/src`. The zip is:
 
 https://github.com/archimatetool/archi-scripting-plugin/archive/refs/tags/v1.7.0.zip
 
-The zip unpacks to `archi-scripting-plugin-1.7.0`. It contains
-`com.archimatetool.script`, `com.archimatetool.script.commandline`, and
-`com.archimatetool.script.nashorn`. The script manifest says
-`Bundle-Version: 1.7.0.qualifier`. In Git Bash, that path is `JARCHI_SRC`.
-
-With git:
+From this `windows` directory:
 
 ```bash
-git clone --branch v1.7.0 --depth 1 https://github.com/archimatetool/archi-scripting-plugin.git
+mkdir -p src
+git clone --branch v1.7.0 --depth 1 https://github.com/archimatetool/archi-scripting-plugin.git src/archi-scripting-plugin-1.7.0
 ```
 
-Keep `ARCHI_SRC` and `JARCHI_SRC` on the same drive. The build records the
-path from one tree to the other inside the Archi `pom.xml`.
+Both trees sit under `windows/src`, so they are on the same drive. The build
+records the path from one tree to the other inside the Archi `pom.xml`.
 
 ## 4. Install SDKMAN in Git Bash
 
@@ -198,8 +212,8 @@ Leave Java and Maven out of that file. `sdk use` supplies them.
 
 ```bash
 export ARCHI_HOME="/c/Users/you/Archi"
-export ARCHI_SRC="/c/Users/you/src/archi-release_5.3.0"
-export JARCHI_SRC="/c/Users/you/src/archi-scripting-plugin-1.7.0"
+export ARCHI_SRC="src/archi-release_5.3.0"
+export JARCHI_SRC="src/archi-scripting-plugin-1.7.0"
 ```
 
 `build.sh` and `run.sh` load `local.env` when the file is present. You can

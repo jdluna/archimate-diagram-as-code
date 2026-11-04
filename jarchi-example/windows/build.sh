@@ -30,6 +30,9 @@ require_dir() {
     echo "Set $name in the shell or in windows/local.env. See windows/README.md." >&2
     exit 1
   fi
+  if [[ "$value" != /* && "$value" != [A-Za-z]:* ]]; then
+    value="$ROOT/$value"
+  fi
   local unix
   unix="$(to_unix "$value")"
   if [[ ! -d "$unix" ]]; then
