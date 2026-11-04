@@ -145,6 +145,13 @@ fi
 
 if [[ -f "${SDKMAN_DIR}/bin/sdkman-init.sh" ]]; then
   echo "SDKMAN is already installed at ${SDKMAN_DIR}."
+  if [[ -n "$candidates_file" && -f "$candidates_file" ]]; then
+    mkdir -p "${SDKMAN_DIR}/var"
+    cp "$candidates_file" "${SDKMAN_DIR}/var/candidates"
+    echo "Wrote ${SDKMAN_DIR}/var/candidates."
+  else
+    echo "Save https://api.sdkman.io/2/candidates/all as ${DOWNLOAD_DIR}/candidates.txt and run ./install-sdkman.sh again."
+  fi
 elif [[ ! -f "$cli_zip" || ! -f "$native_zip" ]]; then
   echo "Save these two zip files with your browser into:" >&2
   echo "  ${DOWNLOAD_DIR}" >&2

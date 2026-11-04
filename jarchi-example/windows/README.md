@@ -101,7 +101,28 @@ sdk version
 
 `./install-sdkman.sh` unpacks both zips with the `unzip` command from the
 step above, copies them to `%USERPROFILE%\.sdkman`, and records
-`candidates.txt`. `sdk version` prints the SDKMAN script version.
+`candidates.txt` as `%USERPROFILE%\.sdkman\var\candidates`. `sdk version`
+prints the SDKMAN script version.
+
+The folder `%USERPROFILE%\.sdkman\candidates` is where installed JDKs and
+Maven builds live. The list of names `sdk list` knows is the file
+`var\candidates` next to it. If the first run happened before
+`candidates.txt` was saved, save that file now and run the script again. It
+copies the list into place and leaves the rest of the install as it is:
+
+```bash
+./install-sdkman.sh
+```
+
+The same copy from this directory is:
+
+```bash
+mkdir -p "$HOME/.sdkman/var"
+cp sdkman-download/candidates.txt "$HOME/.sdkman/var/candidates"
+```
+
+`candidates.txt` has to be the one-line response from the candidates address,
+with commas between the names.
 
 When `sdk list` or `sdk install` also has to pass the proxy, set the same
 proxy the browser uses, then run the install. Answer `Y` when asked to make
