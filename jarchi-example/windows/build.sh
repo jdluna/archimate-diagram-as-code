@@ -124,9 +124,27 @@ if [[ "${MAVEN_OPTS:-}" != *javax.net.ssl.trustStoreType* ]]; then
   export MAVEN_OPTS="${MAVEN_OPTS:-} -Djavax.net.ssl.trustStoreType=Windows-ROOT"
 fi
 
+# org.eclipse.draw2d compiles against org.osgi.annotation.versioning. The
+# 2023-06 p2 repository lists that bundle, and some of its mirrors answer
+# 403. The identical jar is on Maven Central. Put it in the local p2 cache
+# so the compiler does not download it from download.eclipse.org.
+mvn -B dependency:get -Dartifact=org.osgi:org.osgi.annotation.versioning:1.1.2:jar
+versioning_jar="${HOME}/.m2/repository/org/osgi/org.osgi.annotation.versioning/1.1.2/org.osgi.annotation.versioning-1.1.2.jar"
+if [[ ! -f "$versioning_jar" ]]; then
+  echo "Maven Central did not provide org.osgi.annotation.versioning 1.1.2." >&2
+  exit 1
+fi
+for version in 1.1.2.202109301733 1.1.2.202103011733; do
+  dest="${HOME}/.m2/repository/p2/osgi/bundle/org.osgi.annotation.versioning/${version}"
+  mkdir -p "$dest"
+  cp -f "$versioning_jar" "${dest}/org.osgi.annotation.versioning-${version}.jar"
+done
+
 (
   cd "$ARCHI_SRC"
-  mvn -B -Drevision=5.3.0-SNAPSHOT clean package -DskipTests -P'!tests'
+  # eclipse.p2.mirrors=false keeps p2 on download.eclipse.org. A mirror that
+  # returns 403 is what fails the draw2d compile.
+  mvn -B -Drevision=5.3.0-SNAPSHOT -Declipse.p2.mirrors=false clean package -DskipTests -P'!tests'
 )
 
 mkdir -p "$DIST"

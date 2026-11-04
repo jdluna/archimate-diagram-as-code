@@ -252,6 +252,12 @@ for `org.eclipse.tycho:tycho-build`. `build.sh` sets
 certificates, the same ones the browser already trusts. Run `./build.sh`
 again after pulling this change.
 
+The next failure, after the certificates are accepted, is HTTP 403 while
+compiling `org.eclipse.draw2d`. p2 asks a mirror of `download.eclipse.org`
+for `org.osgi.annotation.versioning` and that mirror refuses the request.
+`build.sh` turns mirrors off, and it copies the same jar from Maven Central
+into the local p2 cache before the compile. Run `./build.sh` again.
+
 If the same PKIX error remains, the proxy certificate is not in the Windows
 root store. Export that certificate from the browser as `proxy-root.crt`,
 then import it into the JDK selected in this window. That JDK lives under
