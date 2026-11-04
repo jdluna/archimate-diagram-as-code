@@ -33,6 +33,33 @@ to_unix() {
   cygpath -u "$1"
 }
 
+# Maven's own local repository. help:evaluate prints a Windows path, and on
+# Git Bash that output is often mixed with log lines, so only a real directory
+# is accepted. The fallbacks are the two places a JDK looks for .m2.
+maven_local_repo() {
+  local raw unix candidate
+  raw="$(mvn -B -q help:evaluate -Dexpression=settings.localRepository -DforceStdout 2>/dev/null | tr -d '\r\n' || true)"
+  raw="${raw//\\//}"
+  if [[ "$raw" == [A-Za-z]:/* || "$raw" == /* ]]; then
+    unix="$(cygpath -u "$raw" 2>/dev/null || true)"
+    if [[ -n "$unix" && -d "$unix" ]]; then
+      printf '%s' "$unix"
+      return
+    fi
+  fi
+  for candidate in "${USERPROFILE:-}" "$HOME"; do
+    [[ -z "$candidate" ]] && continue
+    unix="$(cygpath -u "$candidate/.m2/repository" 2>/dev/null || true)"
+    if [[ -n "$unix" && -d "$unix" ]]; then
+      printf '%s' "$unix"
+      return
+    fi
+  done
+  unix="$(cygpath -u "$HOME/.m2/repository")"
+  mkdir -p "$unix"
+  printf '%s' "$unix"
+}
+
 require_dir() {
   local name="$1"
   local value="${2:-}"
@@ -159,16 +186,10 @@ central_pom="$(mktemp -d)/pom.xml"
   echo '  </dependencies>'
   echo '</project>'
 } > "$central_pom"
-mvn -f "$central_pom" -B dependency:resolve
-# Git Bash $HOME/.m2 is not always the repository Maven just wrote.
-# settings.localRepository is that directory (a Windows path). The evaluate
-# goal can also print status lines; the path is the last one.
-local_repo_win="$(mvn -f "$central_pom" -B help:evaluate -Dexpression=settings.localRepository -DforceStdout | tr -d '\r' | sed '/^$/d' | tail -n 1)"
-local_repo="$(cygpath -u "$local_repo_win")"
-if [[ ! -d "$local_repo" ]]; then
-  echo "Maven local repository was not found: $local_repo_win" >&2
-  exit 1
-fi
+local_repo="$(maven_local_repo)"
+local_repo_win="$(cygpath -m "$local_repo")"
+echo "Maven local repository: $local_repo"
+mvn -f "$central_pom" -B -Dmaven.repo.local="$local_repo_win" dependency:resolve
 while IFS='|' read -r bundle_id bundle_version group artifact maven_version; do
   bundle_id="${bundle_id//$'\r'/}"
   bundle_version="${bundle_version//$'\r'/}"
@@ -192,7 +213,7 @@ done < "$ROOT/central-bundles.txt"
   cd "$ARCHI_SRC"
   # eclipse.p2.mirrors=false keeps p2 on download.eclipse.org. A mirror that
   # returns 403 is what fails the draw2d compile.
-  mvn -B -Drevision=5.3.0-SNAPSHOT -Declipse.p2.mirrors=false clean package -DskipTests -P'!tests'
+  mvn -B -Dmaven.repo.local="$local_repo_win" -Drevision=5.3.0-SNAPSHOT -Declipse.p2.mirrors=false clean package -DskipTests -P'!tests'
 )
 
 mkdir -p "$DIST"
