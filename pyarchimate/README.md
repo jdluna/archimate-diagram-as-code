@@ -1,4 +1,4 @@
-# pyArchimate claims example
+# pyArchimate examples
 
 `examples/generate_claims_model.py` builds a claims-handling model with
 [pyArchimate 2.0.2](https://pypi.org/project/pyArchimate/2.0.2/) and writes:
@@ -8,6 +8,18 @@
 
 pyArchimate 2.0.2 runs on Python 3.11, 3.12, 3.13, or 3.14. This example was
 written with Python 3.13.
+
+`examples/generate_harbor_landscape.py` builds a second model that uses every
+ArchiMate element type, including Grouping. It writes:
+
+- `examples/out/harbor-landscape.archimate`
+- `examples/out/harbor-landscape.xml`
+
+Open the `.archimate` file in Archi. The views are a context diagram, a
+conceptual architecture (motivation and strategy), and a logical architecture
+(business, application, technology, physical, and the change roadmap). Each
+area is a Grouping element, and the concepts sit inside that box. The script
+prints the reloaded counts: 71 elements, 146 relationships, and 3 views.
 
 ## Windows from Git Bash
 
@@ -113,10 +125,12 @@ Stay in the activated environment:
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 python examples/generate_claims_model.py
+python examples/generate_harbor_landscape.py
 ```
 
-`requirements.txt` pins `pyArchimate==2.0.2`. The script prints the output
-paths and the reloaded counts: 14 elements, 17 relationships, and 3 views.
+`requirements.txt` pins `pyArchimate==2.0.2`. The claims script prints the
+output paths and the reloaded counts: 14 elements, 17 relationships, and 3
+views. The Harbor script prints 71 elements, 146 relationships, and 3 views.
 
 Leave the environment with:
 
@@ -132,6 +146,7 @@ Open Git Bash, go to this folder, and activate the existing venv:
 cd /c/Users/you/Documents/proyectos-dev/archimate-diagram-as-code/pyarchimate
 source .venv/Scripts/activate
 python examples/generate_claims_model.py
+python examples/generate_harbor_landscape.py
 ```
 
 ### 6. Rebuild the venv after changing the Python version
@@ -148,6 +163,7 @@ python -m venv .venv
 source .venv/Scripts/activate
 python -m pip install -r requirements.txt
 python examples/generate_claims_model.py
+python examples/generate_harbor_landscape.py
 ```
 
 Use a version in the 3.11–3.14 range. pyArchimate 2.0.2 declares that range
