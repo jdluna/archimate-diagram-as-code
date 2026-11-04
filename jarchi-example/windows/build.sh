@@ -164,28 +164,10 @@ fi
 
 # download.eclipse.org answers 403 for the OSGi bundles that are also published
 # on Maven Central (org.osgi.service.metatype.annotations and the rest of that
-# set). No proxy certificate is required. Resolve them from Maven Central and
-# copy each jar into the local p2 cache Tycho reads.
-central_pom="$(mktemp -d)/pom.xml"
-{
-  echo '<project>'
-  echo '  <modelVersion>4.0.0</modelVersion>'
-  echo '  <groupId>local</groupId>'
-  echo '  <artifactId>central-bundles</artifactId>'
-  echo '  <version>1</version>'
-  echo '  <dependencies>'
-  while IFS='|' read -r bundle_id bundle_version group artifact maven_version; do
-    bundle_id="${bundle_id//$'\r'/}"
-    bundle_version="${bundle_version//$'\r'/}"
-    group="${group//$'\r'/}"
-    artifact="${artifact//$'\r'/}"
-    maven_version="${maven_version//$'\r'/}"
-    [[ -z "$bundle_id" || "$bundle_id" == \#* ]] && continue
-    echo "    <dependency><groupId>${group}</groupId><artifactId>${artifact}</artifactId><version>${maven_version}</version></dependency>"
-  done < "$ROOT/central-bundles.txt"
-  echo '  </dependencies>'
-  echo '</project>'
-} > "$central_pom"
+# set). No proxy certificate is required. Fetch each exact version and copy it
+# into the local p2 cache Tycho reads. One combined resolve is wrong here:
+# javax.servlet.jsp depends on javax.el with a version range, and Maven then
+# keeps 3.0.1-b12 instead of the 3.0.0 jar this build needs.
 local_repo="$(maven_local_repo)"
 local_repo_win="$(cygpath -m "$local_repo")"
 echo "Maven local repository: $local_repo"
@@ -193,7 +175,7 @@ echo "Maven local repository: $local_repo"
 # That host is retired and its certificate fails with "validity check failed".
 # This settings file sends every lookup to Maven Central. It is used only for
 # this prefetch, so the Archi build still uses the normal Maven settings.
-central_settings="$(dirname "$central_pom")/settings.xml"
+central_settings="$(mktemp -d)/settings.xml"
 {
   user_settings=""
   for candidate in "$HOME/.m2/settings.xml" "${USERPROFILE:-}/.m2/settings.xml"; do
@@ -252,7 +234,6 @@ central_settings="$(dirname "$central_pom")/settings.xml"
 } > "$central_settings"
 unset -f print_mirror
 unset mirror_done
-mvn -f "$central_pom" -s "$central_settings" -B -Dmaven.repo.local="$local_repo_win" dependency:resolve
 while IFS='|' read -r bundle_id bundle_version group artifact maven_version; do
   bundle_id="${bundle_id//$'\r'/}"
   bundle_version="${bundle_version//$'\r'/}"
@@ -263,6 +244,14 @@ while IFS='|' read -r bundle_id bundle_version group artifact maven_version; do
   group_path="${group//.//}"
   src="${local_repo}/${group_path}/${artifact}/${maven_version}/${artifact}-${maven_version}.jar"
   dest="${local_repo}/p2/osgi/bundle/${bundle_id}/${bundle_version}/${bundle_id}-${bundle_version}.jar"
+  if [[ ! -f "$src" ]]; then
+    # The repository URL must not be rewritten by Git Bash path conversion.
+    MSYS_NO_PATHCONV=1 mvn -s "$central_settings" -B -Dmaven.repo.local="$local_repo_win" \
+      org.apache.maven.plugins:maven-dependency-plugin:3.6.1:get \
+      -Dartifact="${group}:${artifact}:${maven_version}:jar" \
+      -Dtransitive=false \
+      -DremoteRepositories=https://repo.maven.apache.org/maven2
+  fi
   if [[ ! -f "$src" ]]; then
     echo "Maven Central did not provide ${group}:${artifact}:${maven_version}." >&2
     echo "Expected file: $src" >&2
