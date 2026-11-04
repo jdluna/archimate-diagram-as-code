@@ -116,6 +116,14 @@ MSYS_NO_PATHCONV=1 powershell.exe -NoProfile -ExecutionPolicy Bypass \
   -ModuleCommandline "$mod_commandline" \
   -ModuleNashorn "$mod_nashorn"
 
+# SDKMAN's JDK trusts the public roots shipped in cacerts. A proxy that
+# presents its own certificate is trusted by Windows and by the browser, and
+# fails in Maven with "PKIX path building failed". Windows-ROOT is that
+# Windows root store.
+if [[ "${MAVEN_OPTS:-}" != *javax.net.ssl.trustStoreType* ]]; then
+  export MAVEN_OPTS="${MAVEN_OPTS:-} -Djavax.net.ssl.trustStoreType=Windows-ROOT"
+fi
+
 (
   cd "$ARCHI_SRC"
   mvn -B -Drevision=5.3.0-SNAPSHOT clean package -DskipTests -P'!tests'

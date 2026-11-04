@@ -245,6 +245,27 @@ sdk use maven 3.9.6
 The first Maven run downloads the Eclipse 2023-06 dependencies declared by
 Archi 5.3.0. Later runs reuse the local Maven cache.
 
+Maven talks to `https://repo.maven.apache.org/maven2`. When the company proxy
+presents its own certificate, the JDK reports `PKIX path building failed`
+for `org.eclipse.tycho:tycho-build`. `build.sh` sets
+`javax.net.ssl.trustStoreType=Windows-ROOT` so that JDK uses the Windows root
+certificates, the same ones the browser already trusts. Run `./build.sh`
+again after pulling this change.
+
+If the same PKIX error remains, the proxy certificate is not in the Windows
+root store. Export that certificate from the browser as `proxy-root.crt`,
+then import it into the JDK selected in this window. That JDK lives under
+your user profile, so this needs no administrator account:
+
+```bash
+keytool -importcert -noprompt \
+  -alias corporate-proxy \
+  -keystore "$JAVA_HOME/lib/security/cacerts" \
+  -storepass changeit \
+  -file proxy-root.crt
+./build.sh
+```
+
 ## 8. Generate the model
 
 In that same window:
