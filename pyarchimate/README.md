@@ -21,6 +21,65 @@ conceptual architecture (motivation and strategy), and a logical architecture
 area is a Grouping element, and the concepts sit inside that box. The script
 prints the reloaded counts: 71 elements, 146 relationships, and 3 views.
 
+## How to lay out a view
+
+Archi draws a connection as a straight line between the centres of the two
+elements. It keeps that line when the file is opened. A third element that
+sits on the straight line has the stroke drawn through it, and several lines
+that share the same stroke pile their labels on top of each other. The claims
+script in `examples/generate_claims_model.py` avoids that by placing elements
+on a grid and sending the long lines through the empty bands. Use the same
+rules for a new view.
+
+Give the view one row per concern, read from the top down: roles, then
+processes, then applications, then technology. Give it one column per vertical
+story. The handler sits in the same column as Assess claim, the API sits in
+the same column as Claims core, and the platform sits in the same column as
+the portal. A column step of 210px with an element width of 148px leaves a
+62px gap between boxes. A row step that is larger than the element height
+leaves an empty band between the rows. That band is where a long line travels.
+
+```text
+roles        Customer    Policyholder              Handler
+                              |                        |
+processes                    Register claim         Assess claim -- Claim file
+
+applications                 Portal                 API
+                                                    Core -- Service     Record
+
+technology   Runtime -- Node -- Platform
+```
+
+Place the two ends of a relationship on the same row or the same column, with
+no other element between them, and leave the connection straight.
+`view.add_connection` does that. `put` in the claims script is the placement
+call: column, row, width 148, height 58.
+
+When a relationship has to reach past another element, route it with two
+bendpoints in an empty band. `lane` does this. The line leaves the source on
+a vertical, crosses the band, and enters the target on a vertical. The y of
+the band sits between the rows, so the horizontal part never meets a box. The
+vertical part stays in a column that is empty between the element and the
+band. If that column is already occupied, leave the source sideways at its
+own mid-height and climb a free column, which is how the API reaches the
+policyholder without passing through Assess claim.
+
+Two lines that leave the same element take two bands, and their first
+bendpoint is shifted a few pixels left or right. "registers" and "assesses"
+leave the top of Claims service on y = 300 and y = 345. The labels then sit
+on separate strokes.
+
+`check_routes` walks every segment of every connection and stops the script
+when a segment crosses an element that is not one of its ends. Call it at the
+end of each new view. A later element that lands on an existing line fails
+the run, which is the signal to move that element to another column or to
+give the line its own band.
+
+A large landscape uses the same grid inside a Grouping. The Harbor script
+nests each concern in one Grouping box. Relationships whose two ends are in
+the same group stay inside the box. A relationship that leaves the group is
+the one that needs a lane in the gap between groups.
+
 ## Windows from Git Bash
 
 Python and the virtual environment stay in your user profile. Nothing is
