@@ -62,7 +62,45 @@ git clone --branch v1.7.0 --depth 1 https://github.com/archimatetool/archi-scrip
 Keep `ARCHI_SRC` and `JARCHI_SRC` on the same drive. The build records the
 path from one tree to the other inside the Archi `pom.xml`.
 
-## 4. Select Java 17 and Maven with sdk
+## 4. Install SDKMAN in Git Bash
+
+SDKMAN is installed under your user profile (`%USERPROFILE%\.sdkman`). The
+commands below write only there and in `%USERPROFILE%\.local\bin`.
+
+Git Bash can run the installer. The installer insists on `zip` and `unzip`,
+and every later `sdk install` unpacks a zip with `unzip`. Windows 10 and
+later include `tar.exe` at `C:\Windows\System32\tar.exe`, and that program
+opens and creates zip archives. `install-sdkman.sh` puts `zip` and `unzip`
+on your user `PATH`. Both commands call that `tar.exe`. Git Bash also has a
+program named `tar`; leave that one out of this step, because it does not
+open zip archives.
+
+From this directory:
+
+```bash
+./install-sdkman.sh
+source "$HOME/.bashrc"
+sdk version
+```
+
+`sdk version` prints the SDKMAN script version. Install a Java 17 build and
+a Maven. Answer `Y` when asked to make the version the default:
+
+```bash
+sdk list java
+sdk install java 17.0.13-tem
+sdk list maven
+sdk install maven 3.9.6
+```
+
+Use the identifiers `sdk list` prints on your machine. `17.0.13-tem` and
+`3.9.6` are examples.
+
+Each new Git Bash window reads `.bashrc`, which adds `$HOME/.local/bin` and
+then starts SDKMAN. Keep that `bin` directory on `PATH`. `sdk install` still
+calls `unzip` from there.
+
+## 5. Select Java 17 and Maven with sdk
 
 Open Git Bash. `sdk` has to be available in that window (`sdk version`
 prints a version). Pick the JDK 17 and the Maven you already installed:
@@ -97,7 +135,7 @@ mvn -version
 from `sdk current maven`, and the Java home on its last lines should be the
 same JDK.
 
-## 5. Record the three folders
+## 6. Record the three folders
 
 From this `windows` directory:
 
@@ -117,7 +155,7 @@ export JARCHI_SRC="/c/Users/you/src/archi-scripting-plugin-1.7.0"
 `build.sh` and `run.sh` load `local.env` when the file is present. You can
 export the same three variables in the window instead of using the file.
 
-## 6. Build
+## 7. Build
 
 Stay in the same Git Bash window, in this directory:
 
@@ -143,7 +181,7 @@ sdk use maven 3.9.6
 The first Maven run downloads the Eclipse 2023-06 dependencies declared by
 Archi 5.3.0. Later runs reuse the local Maven cache.
 
-## 7. Generate the model
+## 8. Generate the model
 
 In that same window:
 
