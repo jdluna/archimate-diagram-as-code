@@ -253,7 +253,9 @@ platform_pom="$(mktemp -d)/pom.xml"
     artifact="${artifact//$'\r'/}"
     maven_version="${maven_version//$'\r'/}"
     [[ -z "$bundle_id" || "$bundle_id" == \#* ]] && continue
-    echo "    <dependency><groupId>${group}</groupId><artifactId>${artifact}</artifactId><version>${maven_version}</version></dependency>"
+    # Wildcard exclusion skips transitive ranges such as
+    # javax.annotation:javax.annotation-api:[1.3.5,2.0.0). Only the platform jar is required.
+    echo "    <dependency><groupId>${group}</groupId><artifactId>${artifact}</artifactId><version>${maven_version}</version><exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions></dependency>"
   done < "$ROOT/eclipse-platform-bundles.txt"
   echo '  </dependencies>'
   echo '</project>'
