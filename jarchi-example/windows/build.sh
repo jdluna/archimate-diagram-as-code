@@ -8,7 +8,10 @@ set -euo pipefail
 # BASH_SOURCE is the script file that was started.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EXAMPLE="$(cd "$ROOT/.." && pwd)"
+# Same folder the macOS build uses: jarchi-example/dist.
+# Create it now. The jars are copied in after Maven finishes.
 DIST="$EXAMPLE/dist"
+mkdir -p "$DIST"
 
 if [[ -f "$ROOT/local.env" ]]; then
   set -a
@@ -16,6 +19,10 @@ if [[ -f "$ROOT/local.env" ]]; then
   source "$ROOT/local.env"
   set +a
 fi
+
+# local.env must not move the output. The folder is the macOS one.
+DIST="$EXAMPLE/dist"
+mkdir -p "$DIST"
 
 if ! command -v cygpath >/dev/null 2>&1; then
   echo "Run this script from Git Bash. cygpath was not found." >&2
@@ -109,6 +116,7 @@ echo "Java $java_version from $JAVA_HOME"
 mvn -version
 echo "Archi source: $ARCHI_SRC"
 echo "jArchi source: $JARCHI_SRC"
+echo "Dist folder: $DIST"
 
 MSYS_NO_PATHCONV=1 powershell.exe -NoProfile -ExecutionPolicy Bypass \
   -File "$(cygpath -w "$ROOT/patch-reactor.ps1")" \
@@ -140,6 +148,11 @@ central_pom="$(mktemp -d)/pom.xml"
   echo '  <version>1</version>'
   echo '  <dependencies>'
   while IFS='|' read -r bundle_id bundle_version group artifact maven_version; do
+    bundle_id="${bundle_id//$'\r'/}"
+    bundle_version="${bundle_version//$'\r'/}"
+    group="${group//$'\r'/}"
+    artifact="${artifact//$'\r'/}"
+    maven_version="${maven_version//$'\r'/}"
     [[ -z "$bundle_id" || "$bundle_id" == \#* ]] && continue
     echo "    <dependency><groupId>${group}</groupId><artifactId>${artifact}</artifactId><version>${maven_version}</version></dependency>"
   done < "$ROOT/central-bundles.txt"
@@ -147,13 +160,28 @@ central_pom="$(mktemp -d)/pom.xml"
   echo '</project>'
 } > "$central_pom"
 mvn -f "$central_pom" -B dependency:resolve
+# Git Bash $HOME/.m2 is not always the repository Maven just wrote.
+# settings.localRepository is that directory (a Windows path). The evaluate
+# goal can also print status lines; the path is the last one.
+local_repo_win="$(mvn -f "$central_pom" -B help:evaluate -Dexpression=settings.localRepository -DforceStdout | tr -d '\r' | sed '/^$/d' | tail -n 1)"
+local_repo="$(cygpath -u "$local_repo_win")"
+if [[ ! -d "$local_repo" ]]; then
+  echo "Maven local repository was not found: $local_repo_win" >&2
+  exit 1
+fi
 while IFS='|' read -r bundle_id bundle_version group artifact maven_version; do
+  bundle_id="${bundle_id//$'\r'/}"
+  bundle_version="${bundle_version//$'\r'/}"
+  group="${group//$'\r'/}"
+  artifact="${artifact//$'\r'/}"
+  maven_version="${maven_version//$'\r'/}"
   [[ -z "$bundle_id" || "$bundle_id" == \#* ]] && continue
   group_path="${group//.//}"
-  src="${HOME}/.m2/repository/${group_path}/${artifact}/${maven_version}/${artifact}-${maven_version}.jar"
-  dest="${HOME}/.m2/repository/p2/osgi/bundle/${bundle_id}/${bundle_version}/${bundle_id}-${bundle_version}.jar"
+  src="${local_repo}/${group_path}/${artifact}/${maven_version}/${artifact}-${maven_version}.jar"
+  dest="${local_repo}/p2/osgi/bundle/${bundle_id}/${bundle_version}/${bundle_id}-${bundle_version}.jar"
   if [[ ! -f "$src" ]]; then
     echo "Maven Central did not provide ${group}:${artifact}:${maven_version}." >&2
+    echo "Expected file: $src" >&2
     exit 1
   fi
   mkdir -p "$(dirname "$dest")"
