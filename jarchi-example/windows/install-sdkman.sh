@@ -2,12 +2,18 @@
 # Install SDKMAN into the current user's home directory from Git Bash.
 # Zip archives are read and written with Windows tar.exe. Nothing is written
 # under Program Files, and no separate zip program is installed.
+#
+# The two SDKMAN zip files are saved with a browser into sdkman-download/.
+# This script does not download them.
 
 set -euo pipefail
 
 WIN_TAR="/c/Windows/System32/tar.exe"
 BIN_DIR="${HOME}/.local/bin"
 BASHRC="${HOME}/.bashrc"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+DOWNLOAD_DIR="${SCRIPT_DIR}/sdkman-download"
+SDKMAN_DIR="${HOME}/.sdkman"
 
 if [[ ! -f "$WIN_TAR" ]]; then
   echo "Windows tar.exe was not found at C:\\Windows\\System32\\tar.exe." >&2
@@ -121,10 +127,123 @@ if ! grep -q '\.local/bin' "$BASHRC"; then
   echo "Added \$HOME/.local/bin to ${BASHRC}."
 fi
 
-if [[ -f "${HOME}/.sdkman/bin/sdkman-init.sh" ]]; then
-  echo "SDKMAN is already installed at ${HOME}/.sdkman."
+# The browser download lands in sdkman-download/. Arguments override that folder.
+cli_zip="${1:-}"
+native_zip="${2:-}"
+candidates_file="${3:-}"
+if [[ -z "$cli_zip" && -d "$DOWNLOAD_DIR" ]]; then
+  shopt -s nullglob
+  cli_zips=("${DOWNLOAD_DIR}"/sdkman-cli-[0-9]*.zip)
+  native_zips=("${DOWNLOAD_DIR}"/sdkman-cli-native-*-windows-msvc.zip)
+  shopt -u nullglob
+  cli_zip="${cli_zips[0]:-}"
+  native_zip="${native_zips[0]:-}"
+  if [[ -z "$candidates_file" && -f "${DOWNLOAD_DIR}/candidates.txt" ]]; then
+    candidates_file="${DOWNLOAD_DIR}/candidates.txt"
+  fi
+fi
+
+if [[ -f "${SDKMAN_DIR}/bin/sdkman-init.sh" ]]; then
+  echo "SDKMAN is already installed at ${SDKMAN_DIR}."
+elif [[ ! -f "$cli_zip" || ! -f "$native_zip" ]]; then
+  echo "Save these two zip files with your browser into:" >&2
+  echo "  ${DOWNLOAD_DIR}" >&2
+  echo >&2
+  echo "  https://github.com/sdkman/sdkman-cli/releases/download/5.24.0/sdkman-cli-5.24.0.zip" >&2
+  echo "  https://github.com/sdkman/sdkman-cli-native/releases/download/v0.8.0/sdkman-cli-native-0.8.0-x86_64-pc-windows-msvc.zip" >&2
+  echo >&2
+  echo "Also save https://api.sdkman.io/2/candidates/all as candidates.txt in that same folder." >&2
+  echo "Then run ./install-sdkman.sh again." >&2
+  exit 1
 else
-  curl -fsSL "https://get.sdkman.io?rcupdate=true" | bash
+  stage="$(mktemp -d)"
+  "${BIN_DIR}/unzip" -qo "$cli_zip" -d "$stage"
+  "${BIN_DIR}/unzip" -qo "$native_zip" -d "$stage"
+
+  shopt -s nullglob
+  cli_dir=""
+  native_dir=""
+  for dir in "$stage"/sdkman-*; do
+    base="$(basename "$dir")"
+    if [[ "$base" == sdkman-cli-native-* ]]; then
+      native_dir="$dir"
+    elif [[ "$base" == sdkman-* ]]; then
+      cli_dir="$dir"
+    fi
+  done
+  shopt -u nullglob
+  if [[ -z "$cli_dir" || -z "$native_dir" ]]; then
+    echo "The zip files do not contain the sdkman-cli and sdkman-cli-native folders." >&2
+    rm -rf "$stage"
+    exit 1
+  fi
+
+  mkdir -p \
+    "${SDKMAN_DIR}/tmp" \
+    "${SDKMAN_DIR}/ext" \
+    "${SDKMAN_DIR}/etc" \
+    "${SDKMAN_DIR}/var" \
+    "${SDKMAN_DIR}/candidates"
+  cp -R "${cli_dir}/." "${SDKMAN_DIR}/"
+  cp -R "${native_dir}/." "${SDKMAN_DIR}/"
+  rm -rf "$stage"
+
+  cli_version="$(basename "$cli_dir")"
+  cli_version="${cli_version#sdkman-}"
+  native_version="$(basename "$native_dir")"
+  native_version="${native_version#sdkman-cli-native-}"
+  native_version="${native_version%%-*}"
+  printf '%s\n' "$cli_version" > "${SDKMAN_DIR}/var/version"
+  printf '%s\n' "$native_version" > "${SDKMAN_DIR}/var/version_native"
+
+  machine="$(uname -m)"
+  case "$(uname -s)" in
+    MSYS*|MINGW*)
+      if [[ "$machine" == "x86_64" ]]; then
+        printf '%s\n' "windowsx64" > "${SDKMAN_DIR}/var/platform"
+      else
+        printf '%s\n' "exotic" > "${SDKMAN_DIR}/var/platform"
+      fi
+      ;;
+    *)
+      printf '%s\n' "exotic" > "${SDKMAN_DIR}/var/platform"
+      ;;
+  esac
+
+  if [[ ! -f "${SDKMAN_DIR}/etc/config" ]]; then
+    cat > "${SDKMAN_DIR}/etc/config" << 'EOF'
+sdkman_auto_answer=false
+sdkman_auto_complete=true
+sdkman_auto_env=false
+sdkman_beta_channel=false
+sdkman_checksum_enable=true
+sdkman_colour_enable=true
+sdkman_curl_connect_timeout=7
+sdkman_curl_max_time=10
+sdkman_debug_mode=false
+sdkman_healthcheck_enable=true
+sdkman_insecure_ssl=false
+sdkman_native_enable=true
+sdkman_selfupdate_feature=true
+EOF
+  fi
+
+  if [[ -n "$candidates_file" && -f "$candidates_file" ]]; then
+    cp "$candidates_file" "${SDKMAN_DIR}/var/candidates"
+  else
+    echo "candidates.txt was not in sdkman-download. sdk list needs that file or a later call to api.sdkman.io."
+  fi
+
+  if ! grep -q 'sdkman-init.sh' "$BASHRC"; then
+    cat >> "$BASHRC" << 'EOF'
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+EOF
+    echo "Added SDKMAN startup to ${BASHRC}."
+  fi
+  echo "Installed SDKMAN ${cli_version} (native ${native_version}) at ${SDKMAN_DIR}."
 fi
 
 echo

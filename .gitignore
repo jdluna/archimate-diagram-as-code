@@ -3,6 +3,7 @@ jarchi-example/**/.build/
 jarchi-example/**/dist/
 jarchi-example/**/out/
 jarchi-example/**/local.env
+jarchi-example/**/sdkman-download/
 
 # pyarchimate
 pyarchimate/**/.venv/

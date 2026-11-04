@@ -67,13 +67,29 @@ path from one tree to the other inside the Archi `pom.xml`.
 SDKMAN is installed under your user profile (`%USERPROFILE%\.sdkman`). The
 commands below write only there and in `%USERPROFILE%\.local\bin`.
 
-Git Bash can run the installer. The installer insists on `zip` and `unzip`,
-and every later `sdk install` unpacks a zip with `unzip`. Windows 10 and
-later include `tar.exe` at `C:\Windows\System32\tar.exe`, and that program
-opens and creates zip archives. `install-sdkman.sh` puts `zip` and `unzip`
-on your user `PATH`. Both commands call that `tar.exe`. Git Bash also has a
-program named `tar`; leave that one out of this step, because it does not
-open zip archives.
+Every `sdk install` unpacks a zip with `unzip`. Windows 10 and later include
+`tar.exe` at `C:\Windows\System32\tar.exe`, and that program opens and creates
+zip archives. `install-sdkman.sh` puts `zip` and `unzip` on your user `PATH`.
+Both commands call that `tar.exe`. Git Bash also has a program named `tar`;
+the script calls Windows `tar.exe` by its full path, so the Git Bash `tar`
+is left unused.
+
+SDKMAN itself is saved with the browser, which already uses the proxy.
+`install-sdkman.sh` only unpacks those files.
+
+Create `sdkman-download` in this directory. In the browser, save these three
+files there. Keep the zip names as they are. Save the third response as
+`candidates.txt` (it is one comma-separated line):
+
+```text
+https://github.com/sdkman/sdkman-cli/releases/download/5.24.0/sdkman-cli-5.24.0.zip
+https://github.com/sdkman/sdkman-cli-native/releases/download/v0.8.0/sdkman-cli-native-0.8.0-x86_64-pc-windows-msvc.zip
+https://api.sdkman.io/2/candidates/all
+```
+
+A newer pair from the same GitHub release pages also works. The script reads
+the version from the folder inside each zip. The native file has to be the
+`x86_64-pc-windows-msvc` zip.
 
 From this directory:
 
@@ -83,8 +99,20 @@ source "$HOME/.bashrc"
 sdk version
 ```
 
-`sdk version` prints the SDKMAN script version. Install a Java 17 build and
-a Maven. Answer `Y` when asked to make the version the default:
+`./install-sdkman.sh` unpacks both zips with the `unzip` command from the
+step above, copies them to `%USERPROFILE%\.sdkman`, and records
+`candidates.txt`. `sdk version` prints the SDKMAN script version.
+
+When `sdk list` or `sdk install` also has to pass the proxy, set the same
+proxy the browser uses, then run the install. Answer `Y` when asked to make
+the version the default:
+
+```bash
+export https_proxy="http://proxy.example:8080"
+export http_proxy="$https_proxy"
+```
+
+Install a Java 17 build and a Maven:
 
 ```bash
 sdk list java
@@ -98,7 +126,8 @@ Use the identifiers `sdk list` prints on your machine. `17.0.13-tem` and
 
 Each new Git Bash window reads `.bashrc`, which adds `$HOME/.local/bin` and
 then starts SDKMAN. Keep that `bin` directory on `PATH`. `sdk install` still
-calls `unzip` from there.
+unpacks its downloads with `unzip`, and that command still calls Windows
+`tar.exe`.
 
 ## 5. Select Java 17 and Maven with sdk
 
