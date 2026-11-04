@@ -124,21 +124,38 @@ if [[ "${MAVEN_OPTS:-}" != *javax.net.ssl.trustStoreType* ]]; then
   export MAVEN_OPTS="${MAVEN_OPTS:-} -Djavax.net.ssl.trustStoreType=Windows-ROOT"
 fi
 
-# org.eclipse.draw2d compiles against org.osgi.annotation.versioning. The
-# 2023-06 p2 repository lists that bundle, and some of its mirrors answer
-# 403. The identical jar is on Maven Central. Put it in the local p2 cache
-# so the compiler does not download it from download.eclipse.org.
-mvn -B dependency:get -Dartifact=org.osgi:org.osgi.annotation.versioning:1.1.2:jar
-versioning_jar="${HOME}/.m2/repository/org/osgi/org.osgi.annotation.versioning/1.1.2/org.osgi.annotation.versioning-1.1.2.jar"
-if [[ ! -f "$versioning_jar" ]]; then
-  echo "Maven Central did not provide org.osgi.annotation.versioning 1.1.2." >&2
-  exit 1
-fi
-for version in 1.1.2.202109301733 1.1.2.202103011733; do
-  dest="${HOME}/.m2/repository/p2/osgi/bundle/org.osgi.annotation.versioning/${version}"
-  mkdir -p "$dest"
-  cp -f "$versioning_jar" "${dest}/org.osgi.annotation.versioning-${version}.jar"
-done
+# download.eclipse.org answers 403 for the OSGi bundles that are also published
+# on Maven Central (org.osgi.service.metatype.annotations and the rest of that
+# set). No proxy certificate is required. Resolve them from Maven Central and
+# copy each jar into the local p2 cache Tycho reads.
+central_pom="$(mktemp -d)/pom.xml"
+{
+  echo '<project>'
+  echo '  <modelVersion>4.0.0</modelVersion>'
+  echo '  <groupId>local</groupId>'
+  echo '  <artifactId>central-bundles</artifactId>'
+  echo '  <version>1</version>'
+  echo '  <dependencies>'
+  while IFS='|' read -r bundle_id bundle_version group artifact maven_version; do
+    [[ -z "$bundle_id" || "$bundle_id" == \#* ]] && continue
+    echo "    <dependency><groupId>${group}</groupId><artifactId>${artifact}</artifactId><version>${maven_version}</version></dependency>"
+  done < "$ROOT/central-bundles.txt"
+  echo '  </dependencies>'
+  echo '</project>'
+} > "$central_pom"
+mvn -f "$central_pom" -B dependency:resolve
+while IFS='|' read -r bundle_id bundle_version group artifact maven_version; do
+  [[ -z "$bundle_id" || "$bundle_id" == \#* ]] && continue
+  group_path="${group//.//}"
+  src="${HOME}/.m2/repository/${group_path}/${artifact}/${maven_version}/${artifact}-${maven_version}.jar"
+  dest="${HOME}/.m2/repository/p2/osgi/bundle/${bundle_id}/${bundle_version}/${bundle_id}-${bundle_version}.jar"
+  if [[ ! -f "$src" ]]; then
+    echo "Maven Central did not provide ${group}:${artifact}:${maven_version}." >&2
+    exit 1
+  fi
+  mkdir -p "$(dirname "$dest")"
+  cp -f "$src" "$dest"
+done < "$ROOT/central-bundles.txt"
 
 (
   cd "$ARCHI_SRC"
