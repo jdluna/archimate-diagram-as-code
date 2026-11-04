@@ -3,7 +3,9 @@
 # Uses the Archi 5.3.0 application in ARCHI_HOME. No installer and no administrator rights.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")" && pwd)"
+# $0 is /usr/bin/bash under Git Bash, so dirname of it is /usr/bin.
+# BASH_SOURCE is the script file that was started.
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EXAMPLE="$(cd "$ROOT/.." && pwd)"
 DIST="$EXAMPLE/dist"
 JSON="${1:-$EXAMPLE/model/claims.json}"

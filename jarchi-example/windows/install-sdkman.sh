@@ -11,7 +11,9 @@ set -euo pipefail
 WIN_TAR="/c/Windows/System32/tar.exe"
 BIN_DIR="${HOME}/.local/bin"
 BASHRC="${HOME}/.bashrc"
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# $0 is /usr/bin/bash under Git Bash, so dirname of it is /usr/bin.
+# BASH_SOURCE is the script file that was started.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOWNLOAD_DIR="${SCRIPT_DIR}/sdkman-download"
 SDKMAN_DIR="${HOME}/.sdkman"
 

@@ -4,7 +4,9 @@
 # This script does not download a JDK, Maven, or Archi.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")" && pwd)"
+# $0 is /usr/bin/bash under Git Bash, so dirname of it is /usr/bin.
+# BASH_SOURCE is the script file that was started.
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EXAMPLE="$(cd "$ROOT/.." && pwd)"
 DIST="$EXAMPLE/dist"
 
