@@ -245,8 +245,9 @@ while IFS='|' read -r bundle_id bundle_version group artifact maven_version; do
   src="${local_repo}/${group_path}/${artifact}/${maven_version}/${artifact}-${maven_version}.jar"
   dest="${local_repo}/p2/osgi/bundle/${bundle_id}/${bundle_version}/${bundle_id}-${bundle_version}.jar"
   if [[ ! -f "$src" ]]; then
-    # The repository URL must not be rewritten by Git Bash path conversion.
-    MSYS_NO_PATHCONV=1 mvn -s "$central_settings" -B -Dmaven.repo.local="$local_repo_win" \
+    # Protect only the repository URL. Disabling every path conversion makes
+    # java.exe miss Maven's launcher jar.
+    MSYS2_ARG_CONV_EXCL="-DremoteRepositories=" mvn -s "$central_settings" -B -Dmaven.repo.local="$local_repo_win" \
       org.apache.maven.plugins:maven-dependency-plugin:3.6.1:get \
       -Dartifact="${group}:${artifact}:${maven_version}:jar" \
       -Dtransitive=false \
