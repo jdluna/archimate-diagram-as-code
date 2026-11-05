@@ -186,10 +186,10 @@
       "target": "record"
     },
     {
-      "id": "runtime-node",
+      "id": "node-runtime",
       "type": "assignment-relationship",
-      "source": "runtime",
-      "target": "node"
+      "source": "node",
+      "target": "runtime"
     },
     {
       "id": "node-platform",
