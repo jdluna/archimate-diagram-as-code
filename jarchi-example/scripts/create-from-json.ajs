@@ -26,6 +26,16 @@
  * are relative to the parent, and a route point is measured from the view.
  * jArchi stores each point as an offset from the source centre and from the
  * target centre.
+ *
+ * An element may set "fillColor" to "#rrggbb". Archi keeps that colour on
+ * each box, not on the concept, so the script applies it to every view that
+ * places the element. A node may set its own "fillColor" and that box uses
+ * the node colour instead.
+ *
+ * An element may set "figure" to "default" or "alternate". Archi stores the
+ * figure on each box. "default" is the figure Archi draws when the field is
+ * left out. "alternate" is the other figure Archi offers for that concept.
+ * A node may set its own "figure". A junction has no alternate figure.
  */
 
 var Files = Java.type("java.nio.file.Files");
@@ -141,6 +151,39 @@ function requireElement(index, id) {
     return index[id];
 }
 
+function fillColor(value, owner) {
+    if (value === undefined || value === null || value === "") {
+        return null;
+    }
+    var color = String(value);
+    if (!/^#[0-9A-Fa-f]{6}$/.test(color)) {
+        fail(owner + " fillColor must be #rrggbb, got '" + color + "'");
+    }
+    return color;
+}
+
+// Archi stores the figure as an int on the diagram object. 0 is the figure
+// Archi draws by default. 1 is the other figure in the properties panel.
+var FIGURES = {
+    "default": 0,
+    "alternate": 1
+};
+
+function figureType(value, owner) {
+    if (value === undefined || value === null || value === "") {
+        return null;
+    }
+    var name = String(value);
+    if (!Object.prototype.hasOwnProperty.call(FIGURES, name)) {
+        fail(owner + " figure must be default or alternate, got '" + name + "'");
+    }
+    return FIGURES[name];
+}
+
+function junctionType(specType) {
+    return specType === "junction" || specType === "or-junction" || specType === "and-junction";
+}
+
 function diagramCenters(nodeList) {
     // jArchi does not expose the visual parent of a nested diagram object, so
     // the view coordinates are taken from the JSON. Child x and y are added to
@@ -208,9 +251,18 @@ if (data.purpose) {
 }
 
 var elements = {};
+var elementColors = {};
+var elementFigures = {};
+var elementTypes = {};
 var elementList = data.elements || [];
 for (var i = 0; i < elementList.length; i++) {
     var spec = elementList[i];
+    elementColors[spec.id] = fillColor(spec.fillColor, "Element '" + spec.id + "'");
+    elementFigures[spec.id] = figureType(spec.figure, "Element '" + spec.id + "'");
+    elementTypes[spec.id] = spec.type;
+    if (elementFigures[spec.id] === 1 && junctionType(spec.type)) {
+        fail("Element '" + spec.id + "' is a junction and has no alternate figure");
+    }
     var folder = folderFor(spec.layer, spec.folder);
     var element;
     try {
@@ -270,8 +322,9 @@ for (var v = 0; v < viewList.length; v++) {
                 );
             }
         }
+        var diagramObject;
         try {
-            nodes[nodeSpec.element] = container.add(
+            diagramObject = container.add(
                 concept,
                 nodeSpec.x || 0,
                 nodeSpec.y || 0,
@@ -280,6 +333,48 @@ for (var v = 0; v < viewList.length; v++) {
             );
         } catch (error) {
             fail("Could not place '" + nodeSpec.element + "' on view '" + viewSpec.name + "': " + error);
+        }
+        nodes[nodeSpec.element] = diagramObject;
+        // A node colour replaces the element colour for this box only.
+        var color = fillColor(
+            nodeSpec.fillColor,
+            "Node '" + nodeSpec.element + "' on view '" + viewSpec.name + "'"
+        ) || elementColors[nodeSpec.element];
+        if (color) {
+            try {
+                diagramObject.setFillColor(color);
+            } catch (error) {
+                fail(
+                    "Could not set fillColor '" + color + "' on '" + nodeSpec.element +
+                    "' in view '" + viewSpec.name + "': " + error
+                );
+            }
+        }
+        // A node figure replaces the element figure for this box only.
+        // null means the field was left out, so an explicit "default" can
+        // put one view back on Archi's usual figure.
+        var figure = figureType(
+            nodeSpec.figure,
+            "Node '" + nodeSpec.element + "' on view '" + viewSpec.name + "'"
+        );
+        if (figure === null) {
+            figure = elementFigures[nodeSpec.element];
+        }
+        if (figure === 1 && junctionType(elementTypes[nodeSpec.element])) {
+            fail(
+                "Node '" + nodeSpec.element + "' on view '" + viewSpec.name +
+                "' is a junction and has no alternate figure"
+            );
+        }
+        if (figure !== null) {
+            try {
+                diagramObject.setFigureType(Integer.valueOf(figure));
+            } catch (error) {
+                fail(
+                    "Could not set figure on '" + nodeSpec.element +
+                    "' in view '" + viewSpec.name + "': " + error
+                );
+            }
         }
     }
 

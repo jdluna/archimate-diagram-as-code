@@ -52,6 +52,33 @@ id on the Archi object as the property `json-id`.
 | `layer` | yes | Archi top folder, listed below |
 | `folder` | no | Subfolder created under that top folder |
 | `documentation` | no | Archi documentation text |
+| `fillColor` | no | Fill of every box of this element, `#rrggbb` |
+| `figure` | no | `default` or `alternate` for every box of this element |
+
+`fillColor` paints the box on each view that places the element. Archi stores
+the fill on the box, not on the concept, so the same element can still take a
+different colour on one view. The value is `#` plus six hex digits, for
+example `#fff2cc`. Leave it out and the box keeps Archi's default fill for
+that concept.
+
+```json
+{ "id": "portal", "type": "application-component", "name": "Claims portal", "layer": "Application", "fillColor": "#c5e8ff" }
+```
+
+`figure` chooses which of Archi's two figures is drawn. Archi stores it on
+the box, so a node can use the other figure on one view. Leave it out, or set
+`default`, and the box is the figure Archi uses for a new element: a
+rectangle, or a rounded rectangle, with the concept's icon in the corner.
+`alternate` is the other figure in Archi's Figure property. That outline is
+the concept's own shape: a business actor becomes the person, a business
+process becomes the chevron, an application component grows the two tabs on
+its side, and a grouping grows the tab along the top. A junction is only the
+circle, so `alternate` is rejected for `junction`, `or-junction`, and
+`and-junction`.
+
+```json
+{ "id": "register", "type": "business-process", "name": "Register claim", "layer": "Business", "figure": "alternate" }
+```
 
 `layer` is one of `Business`, `Application`, `Technology`, `Physical`,
 `Strategy`, `Motivation`, `Implementation & Migration`, or `Other`. Archi
@@ -138,7 +165,14 @@ A node is `{ "element": "portal", "x": 460, "y": 520 }`. `w` and `h` default
 to 148 and 58. Set them on a Grouping, and set them to 20 and 20 on a
 Junction. `parent` names another element already placed earlier in the same
 `nodes` array. The child is added inside that diagram object, and its `x`
-and `y` are measured from the parent's top-left.
+and `y` are measured from the parent's top-left. A node `fillColor` replaces
+the element colour for that box only. A node `figure` does the same for the
+shape. `default` on a node puts that one box back on Archi's usual figure
+when the element itself is `alternate`.
+
+```json
+{ "element": "portal", "x": 460, "y": 520, "fillColor": "#ffe0c2", "figure": "alternate" }
+```
 
 `viewpoint` is an id from Archi's `viewpoints.xml`. The ids are `organization`,
 `business_process_cooperation`, `product`, `application_cooperation`,

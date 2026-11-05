@@ -106,6 +106,6 @@ $connections = [regex]::Matches($xml, '<sourceConnection\b').Count
 Write-Host "$Out ($kind)"
 Write-Host "  $elements elements, $relationships relationships, $views views"
 Write-Host "  $nodes diagram nodes, $connections diagram connections"
-if ($elements -lt 1 -or $views -lt 1 -or $connections -lt 1) {
+if ($elements -lt 1 -or $views -lt 1 -or $nodes -lt 1) {
     throw "The Archi file has no generated view"
 }

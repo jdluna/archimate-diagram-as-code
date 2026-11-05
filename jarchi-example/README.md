@@ -40,7 +40,7 @@ file, and that optional value consumes the next argument, so the flag is
 placed last. The script fills the empty model. `--saveModel` writes the
 `.archimate` file. `--abortOnException` stops the chain when a provider
 throws. A failure inside the script is printed by jArchi and does not abort
-the save; the run script then checks that the file contains views and connections.
+the save; the run script then checks that the file contains a view with nodes on it.
 
 The script reads `--json` from `$.process.argv`, which is Eclipse's
 application argument list. Element types are Archi's kebab-case names

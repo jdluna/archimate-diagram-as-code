@@ -104,6 +104,6 @@ connections = sum(1 for conn in root.iter("sourceConnection"))
 print(f"{path} ({kind})")
 print(f"  {elements} elements, {relationships} relationships, {views} views")
 print(f"  {nodes} diagram nodes, {connections} diagram connections")
-if elements < 1 or views < 1 or connections < 1:
+if elements < 1 or views < 1 or nodes < 1:
     sys.exit("The Archi file has no generated view")
 PY
