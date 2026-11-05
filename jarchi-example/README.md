@@ -12,8 +12,11 @@ landscape and writes `out/claims-handling.archimate`.
 `model/harbor-landscape.json` is the full landscape: a context diagram, a
 conceptual architecture, and a logical architecture, with every ArchiMate
 element type. Each area is a Grouping, and the concepts are nested in that
-box. It writes `out/harbor-landscape.archimate`. Archi opens either file
-with File > Open.
+box. It writes `out/harbor-landscape.archimate`.
+`model/parcel-delivery.json` is a parcel company drawn as four views: a
+conceptual architecture, a system context, a logical architecture, and a
+high-level infrastructure diagram. It writes `out/parcel-delivery.archimate`.
+Archi opens any of these files with File > Open.
 
 jArchi's repositories have no parent build of their own. The build checks
 out Archi `release_5.10.0`, adds the three jArchi bundles to that reactor,
@@ -80,6 +83,7 @@ cd jarchi-example
 ./run.sh
 ./run.sh model/claims.json out/claims-handling.archimate
 ./run.sh model/harbor-landscape.json out/harbor-landscape.archimate
+./run.sh model/parcel-delivery.json out/parcel-delivery.archimate
 ```
 
 `run.sh` launches:
@@ -112,6 +116,7 @@ cmd //c build-jarchi.bat
 cmd //c run-jarchi.bat
 cmd //c "run-jarchi.bat model/claims.json out/claims-handling.archimate"
 cmd //c "run-jarchi.bat model/harbor-landscape.json out/harbor-landscape.archimate"
+cmd //c "run-jarchi.bat model/parcel-delivery.json out/parcel-delivery.archimate"
 ```
 
 `//c` is required so Git Bash passes `/c` through to `cmd`. `run-jarchi.bat`

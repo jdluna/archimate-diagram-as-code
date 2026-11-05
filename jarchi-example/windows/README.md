@@ -10,8 +10,10 @@ is the pair that matches Archi 5.3.0.
 Bash window. They do not download Java, Maven, Archi, or the plug-in source.
 
 The model script is `../scripts/create-from-json.ajs`. The sample files are
-`../model/claims.json` and `../model/harbor-landscape.json`. The generated
-files are `out/claims-handling.archimate` and `out/harbor-landscape.archimate`
+`../model/claims.json`, `../model/harbor-landscape.json`, and
+`../model/parcel-delivery.json`. The generated files are
+`out/claims-handling.archimate`, `out/harbor-landscape.archimate`, and
+`out/parcel-delivery.archimate`
 in this folder.
 
 ## 1. Place the Archi 5.3.0 application
@@ -281,6 +283,7 @@ In that same window:
 ./run.sh
 ./run.sh ../model/claims.json out/claims-handling.archimate
 ./run.sh ../model/harbor-landscape.json out/harbor-landscape.archimate
+./run.sh ../model/parcel-delivery.json out/parcel-delivery.archimate
 ```
 
 `run.sh` reads `ARCHI_HOME` and does the following:

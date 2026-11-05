@@ -1,0 +1,978 @@
+{
+  "name": "Parcel delivery",
+  "purpose": "Generated from model/parcel-delivery.json by scripts/create-from-json.ajs. A parcel company takes a booking from a sender, sorts the parcel, and runs the depot on one host.",
+  "elements": [
+    {
+      "id": "customer",
+      "type": "business-actor",
+      "name": "Customer",
+      "layer": "Business",
+      "folder": "Parcel",
+      "documentation": "Person who sends a parcel."
+    },
+    {
+      "id": "carrier",
+      "type": "business-actor",
+      "name": "Carrier",
+      "layer": "Business",
+      "folder": "Parcel"
+    },
+    {
+      "id": "sender",
+      "type": "business-role",
+      "name": "Sender",
+      "layer": "Business",
+      "folder": "Parcel"
+    },
+    {
+      "id": "parcel-service",
+      "type": "business-service",
+      "name": "Parcel service",
+      "layer": "Business",
+      "folder": "Parcel"
+    },
+    {
+      "id": "depot",
+      "type": "location",
+      "name": "City depot",
+      "layer": "Other",
+      "folder": "Parcel"
+    },
+    {
+      "id": "director",
+      "type": "stakeholder",
+      "name": "Operations director",
+      "layer": "Motivation",
+      "folder": "Parcel"
+    },
+    {
+      "id": "speed",
+      "type": "driver",
+      "name": "Delivery speed",
+      "layer": "Motivation",
+      "folder": "Parcel"
+    },
+    {
+      "id": "next-day",
+      "type": "goal",
+      "name": "Deliver next day",
+      "layer": "Motivation",
+      "folder": "Parcel"
+    },
+    {
+      "id": "faster",
+      "type": "outcome",
+      "name": "Faster delivery",
+      "layer": "Motivation",
+      "folder": "Parcel"
+    },
+    {
+      "id": "scan-all",
+      "type": "principle",
+      "name": "Scan every parcel",
+      "layer": "Motivation",
+      "folder": "Parcel"
+    },
+    {
+      "id": "record-handover",
+      "type": "requirement",
+      "name": "Record every handover",
+      "layer": "Motivation",
+      "folder": "Parcel"
+    },
+    {
+      "id": "delivery",
+      "type": "capability",
+      "name": "Parcel delivery",
+      "layer": "Strategy",
+      "folder": "Parcel"
+    },
+    {
+      "id": "depot-staff",
+      "type": "resource",
+      "name": "Depot staff",
+      "layer": "Strategy",
+      "folder": "Parcel"
+    },
+    {
+      "id": "lockers",
+      "type": "course-of-action",
+      "name": "Extend locker network",
+      "layer": "Strategy",
+      "folder": "Parcel"
+    },
+    {
+      "id": "drop-off",
+      "type": "value-stream",
+      "name": "Drop-off to doorstep",
+      "layer": "Strategy",
+      "folder": "Parcel"
+    },
+    {
+      "id": "book",
+      "type": "business-process",
+      "name": "Book parcel",
+      "layer": "Business",
+      "folder": "Parcel"
+    },
+    {
+      "id": "sort",
+      "type": "business-process",
+      "name": "Sort parcel",
+      "layer": "Business",
+      "folder": "Parcel"
+    },
+    {
+      "id": "parcel-file",
+      "type": "business-object",
+      "name": "Parcel file",
+      "layer": "Business",
+      "folder": "Parcel"
+    },
+    {
+      "id": "portal",
+      "type": "application-component",
+      "name": "Booking portal",
+      "layer": "Application",
+      "folder": "Parcel"
+    },
+    {
+      "id": "core",
+      "type": "application-component",
+      "name": "Sorting core",
+      "layer": "Application",
+      "folder": "Parcel"
+    },
+    {
+      "id": "booking-api",
+      "type": "application-interface",
+      "name": "Booking API",
+      "layer": "Application",
+      "folder": "Parcel"
+    },
+    {
+      "id": "booking-service",
+      "type": "application-service",
+      "name": "Booking service",
+      "layer": "Application",
+      "folder": "Parcel"
+    },
+    {
+      "id": "parcel-record",
+      "type": "data-object",
+      "name": "Parcel record",
+      "layer": "Application",
+      "folder": "Parcel"
+    },
+    {
+      "id": "host",
+      "type": "node",
+      "name": "Depot host",
+      "layer": "Technology",
+      "folder": "Parcel"
+    },
+    {
+      "id": "runtime",
+      "type": "system-software",
+      "name": "Parcel runtime",
+      "layer": "Technology",
+      "folder": "Parcel"
+    },
+    {
+      "id": "scanner",
+      "type": "device",
+      "name": "Scanner",
+      "layer": "Technology",
+      "folder": "Parcel"
+    },
+    {
+      "id": "network",
+      "type": "communication-network",
+      "name": "Depot network",
+      "layer": "Technology",
+      "folder": "Parcel"
+    },
+    {
+      "id": "compute",
+      "type": "technology-service",
+      "name": "Compute service",
+      "layer": "Technology",
+      "folder": "Parcel"
+    },
+    {
+      "id": "enterprise",
+      "type": "grouping",
+      "name": "Parcel enterprise",
+      "layer": "Other",
+      "folder": "Parcel"
+    },
+    {
+      "id": "motivation",
+      "type": "grouping",
+      "name": "Motivation",
+      "layer": "Other",
+      "folder": "Parcel"
+    },
+    {
+      "id": "strategy",
+      "type": "grouping",
+      "name": "Strategy",
+      "layer": "Other",
+      "folder": "Parcel"
+    },
+    {
+      "id": "business",
+      "type": "grouping",
+      "name": "Business",
+      "layer": "Other",
+      "folder": "Parcel"
+    },
+    {
+      "id": "applications",
+      "type": "grouping",
+      "name": "Applications",
+      "layer": "Other",
+      "folder": "Parcel"
+    },
+    {
+      "id": "platform",
+      "type": "grouping",
+      "name": "Depot platform",
+      "layer": "Other",
+      "folder": "Parcel"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "customer-role",
+      "type": "assignment-relationship",
+      "name": "plays",
+      "source": "customer",
+      "target": "sender"
+    },
+    {
+      "id": "service-sender",
+      "type": "serving-relationship",
+      "source": "parcel-service",
+      "target": "sender"
+    },
+    {
+      "id": "carrier-depot",
+      "type": "association-relationship",
+      "source": "carrier",
+      "target": "depot"
+    },
+    {
+      "id": "sender-book",
+      "type": "assignment-relationship",
+      "source": "sender",
+      "target": "book"
+    },
+    {
+      "id": "book-sort",
+      "type": "triggering-relationship",
+      "name": "booked",
+      "source": "book",
+      "target": "sort"
+    },
+    {
+      "id": "book-file",
+      "type": "access-relationship",
+      "source": "book",
+      "target": "parcel-file"
+    },
+    {
+      "id": "sort-file",
+      "type": "access-relationship",
+      "source": "sort",
+      "target": "parcel-file"
+    },
+    {
+      "id": "portal-core",
+      "type": "flow-relationship",
+      "name": "booking",
+      "source": "portal",
+      "target": "core"
+    },
+    {
+      "id": "portal-api",
+      "type": "composition-relationship",
+      "source": "portal",
+      "target": "booking-api"
+    },
+    {
+      "id": "core-service",
+      "type": "realization-relationship",
+      "source": "core",
+      "target": "booking-service"
+    },
+    {
+      "id": "service-book",
+      "type": "serving-relationship",
+      "name": "books",
+      "source": "booking-service",
+      "target": "book"
+    },
+    {
+      "id": "core-record",
+      "type": "access-relationship",
+      "source": "core",
+      "target": "parcel-record"
+    },
+    {
+      "id": "director-speed",
+      "type": "association-relationship",
+      "source": "director",
+      "target": "speed"
+    },
+    {
+      "id": "director-goal",
+      "type": "association-relationship",
+      "source": "director",
+      "target": "next-day"
+    },
+    {
+      "id": "speed-goal",
+      "type": "influence-relationship",
+      "source": "speed",
+      "target": "next-day"
+    },
+    {
+      "id": "speed-outcome",
+      "type": "influence-relationship",
+      "source": "speed",
+      "target": "faster"
+    },
+    {
+      "id": "outcome-goal",
+      "type": "realization-relationship",
+      "source": "faster",
+      "target": "next-day"
+    },
+    {
+      "id": "principle-goal",
+      "type": "realization-relationship",
+      "source": "scan-all",
+      "target": "next-day"
+    },
+    {
+      "id": "principle-requirement",
+      "type": "influence-relationship",
+      "source": "scan-all",
+      "target": "record-handover"
+    },
+    {
+      "id": "goal-requirement",
+      "type": "influence-relationship",
+      "source": "next-day",
+      "target": "record-handover"
+    },
+    {
+      "id": "staff-capability",
+      "type": "assignment-relationship",
+      "source": "depot-staff",
+      "target": "delivery"
+    },
+    {
+      "id": "lockers-capability",
+      "type": "serving-relationship",
+      "source": "lockers",
+      "target": "delivery"
+    },
+    {
+      "id": "capability-goal",
+      "type": "realization-relationship",
+      "source": "delivery",
+      "target": "next-day"
+    },
+    {
+      "id": "capability-stream",
+      "type": "serving-relationship",
+      "source": "delivery",
+      "target": "drop-off"
+    },
+    {
+      "id": "depot-host",
+      "type": "association-relationship",
+      "source": "depot",
+      "target": "host"
+    },
+    {
+      "id": "host-runtime",
+      "type": "composition-relationship",
+      "source": "host",
+      "target": "runtime"
+    },
+    {
+      "id": "host-scanner",
+      "type": "composition-relationship",
+      "source": "host",
+      "target": "scanner"
+    },
+    {
+      "id": "host-network",
+      "type": "association-relationship",
+      "source": "host",
+      "target": "network"
+    },
+    {
+      "id": "runtime-compute",
+      "type": "realization-relationship",
+      "source": "runtime",
+      "target": "compute"
+    },
+    {
+      "id": "compute-host",
+      "type": "serving-relationship",
+      "source": "compute",
+      "target": "host"
+    },
+    {
+      "id": "enterprise-aggregates-sender",
+      "type": "aggregation-relationship",
+      "source": "enterprise",
+      "target": "sender",
+      "draw": false
+    },
+    {
+      "id": "enterprise-aggregates-parcel-service",
+      "type": "aggregation-relationship",
+      "source": "enterprise",
+      "target": "parcel-service",
+      "draw": false
+    },
+    {
+      "id": "enterprise-aggregates-depot",
+      "type": "aggregation-relationship",
+      "source": "enterprise",
+      "target": "depot",
+      "draw": false
+    },
+    {
+      "id": "motivation-aggregates-director",
+      "type": "aggregation-relationship",
+      "source": "motivation",
+      "target": "director",
+      "draw": false
+    },
+    {
+      "id": "motivation-aggregates-speed",
+      "type": "aggregation-relationship",
+      "source": "motivation",
+      "target": "speed",
+      "draw": false
+    },
+    {
+      "id": "motivation-aggregates-faster",
+      "type": "aggregation-relationship",
+      "source": "motivation",
+      "target": "faster",
+      "draw": false
+    },
+    {
+      "id": "motivation-aggregates-next-day",
+      "type": "aggregation-relationship",
+      "source": "motivation",
+      "target": "next-day",
+      "draw": false
+    },
+    {
+      "id": "motivation-aggregates-scan-all",
+      "type": "aggregation-relationship",
+      "source": "motivation",
+      "target": "scan-all",
+      "draw": false
+    },
+    {
+      "id": "motivation-aggregates-record-handover",
+      "type": "aggregation-relationship",
+      "source": "motivation",
+      "target": "record-handover",
+      "draw": false
+    },
+    {
+      "id": "strategy-aggregates-delivery",
+      "type": "aggregation-relationship",
+      "source": "strategy",
+      "target": "delivery",
+      "draw": false
+    },
+    {
+      "id": "strategy-aggregates-depot-staff",
+      "type": "aggregation-relationship",
+      "source": "strategy",
+      "target": "depot-staff",
+      "draw": false
+    },
+    {
+      "id": "strategy-aggregates-lockers",
+      "type": "aggregation-relationship",
+      "source": "strategy",
+      "target": "lockers",
+      "draw": false
+    },
+    {
+      "id": "strategy-aggregates-drop-off",
+      "type": "aggregation-relationship",
+      "source": "strategy",
+      "target": "drop-off",
+      "draw": false
+    },
+    {
+      "id": "business-aggregates-book",
+      "type": "aggregation-relationship",
+      "source": "business",
+      "target": "book",
+      "draw": false
+    },
+    {
+      "id": "business-aggregates-sort",
+      "type": "aggregation-relationship",
+      "source": "business",
+      "target": "sort",
+      "draw": false
+    },
+    {
+      "id": "business-aggregates-parcel-file",
+      "type": "aggregation-relationship",
+      "source": "business",
+      "target": "parcel-file",
+      "draw": false
+    },
+    {
+      "id": "applications-aggregates-portal",
+      "type": "aggregation-relationship",
+      "source": "applications",
+      "target": "portal",
+      "draw": false
+    },
+    {
+      "id": "applications-aggregates-core",
+      "type": "aggregation-relationship",
+      "source": "applications",
+      "target": "core",
+      "draw": false
+    },
+    {
+      "id": "applications-aggregates-booking-api",
+      "type": "aggregation-relationship",
+      "source": "applications",
+      "target": "booking-api",
+      "draw": false
+    },
+    {
+      "id": "applications-aggregates-booking-service",
+      "type": "aggregation-relationship",
+      "source": "applications",
+      "target": "booking-service",
+      "draw": false
+    },
+    {
+      "id": "applications-aggregates-parcel-record",
+      "type": "aggregation-relationship",
+      "source": "applications",
+      "target": "parcel-record",
+      "draw": false
+    },
+    {
+      "id": "platform-aggregates-depot",
+      "type": "aggregation-relationship",
+      "source": "platform",
+      "target": "depot",
+      "draw": false
+    },
+    {
+      "id": "platform-aggregates-host",
+      "type": "aggregation-relationship",
+      "source": "platform",
+      "target": "host",
+      "draw": false
+    },
+    {
+      "id": "platform-aggregates-runtime",
+      "type": "aggregation-relationship",
+      "source": "platform",
+      "target": "runtime",
+      "draw": false
+    },
+    {
+      "id": "platform-aggregates-scanner",
+      "type": "aggregation-relationship",
+      "source": "platform",
+      "target": "scanner",
+      "draw": false
+    },
+    {
+      "id": "platform-aggregates-network",
+      "type": "aggregation-relationship",
+      "source": "platform",
+      "target": "network",
+      "draw": false
+    },
+    {
+      "id": "platform-aggregates-compute",
+      "type": "aggregation-relationship",
+      "source": "platform",
+      "target": "compute",
+      "draw": false
+    }
+  ],
+  "views": [
+    {
+      "name": "Conceptual architecture",
+      "viewpoint": "layered",
+      "folder": "Parcel",
+      "documentation": "Why the company delivers faster, and the capability it invests in.",
+      "nodes": [
+        {
+          "element": "motivation",
+          "x": 40,
+          "y": 40,
+          "w": 632,
+          "h": 414
+        },
+        {
+          "element": "director",
+          "x": 32,
+          "y": 56,
+          "parent": "motivation"
+        },
+        {
+          "element": "speed",
+          "x": 242,
+          "y": 56,
+          "parent": "motivation"
+        },
+        {
+          "element": "faster",
+          "x": 452,
+          "y": 56,
+          "parent": "motivation"
+        },
+        {
+          "element": "next-day",
+          "x": 32,
+          "y": 256,
+          "parent": "motivation"
+        },
+        {
+          "element": "scan-all",
+          "x": 242,
+          "y": 256,
+          "parent": "motivation"
+        },
+        {
+          "element": "record-handover",
+          "x": 452,
+          "y": 256,
+          "parent": "motivation"
+        },
+        {
+          "element": "strategy",
+          "x": 40,
+          "y": 534,
+          "w": 632,
+          "h": 394
+        },
+        {
+          "element": "delivery",
+          "x": 32,
+          "y": 56,
+          "parent": "strategy"
+        },
+        {
+          "element": "depot-staff",
+          "x": 242,
+          "y": 56,
+          "parent": "strategy"
+        },
+        {
+          "element": "drop-off",
+          "x": 452,
+          "y": 56,
+          "parent": "strategy"
+        },
+        {
+          "element": "lockers",
+          "x": 242,
+          "y": 256,
+          "parent": "strategy"
+        }
+      ],
+      "routes": [
+        {
+          "relationship": "speed-goal",
+          "points": [
+            {
+              "x": 356,
+              "y": 170
+            },
+            {
+              "x": 146,
+              "y": 170
+            }
+          ]
+        },
+        {
+          "relationship": "outcome-goal",
+          "points": [
+            {
+              "x": 566,
+              "y": 214
+            },
+            {
+              "x": 128,
+              "y": 214
+            }
+          ]
+        },
+        {
+          "relationship": "goal-requirement",
+          "points": [
+            {
+              "x": 146,
+              "y": 370
+            },
+            {
+              "x": 566,
+              "y": 370
+            }
+          ]
+        },
+        {
+          "relationship": "lockers-capability",
+          "points": [
+            {
+              "x": 356,
+              "y": 664
+            },
+            {
+              "x": 146,
+              "y": 664
+            }
+          ]
+        },
+        {
+          "relationship": "capability-stream",
+          "points": [
+            {
+              "x": 146,
+              "y": 686
+            },
+            {
+              "x": 566,
+              "y": 686
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "System context",
+      "viewpoint": "layered",
+      "folder": "Parcel",
+      "documentation": "The sender and the carrier around the parcel enterprise.",
+      "nodes": [
+        {
+          "element": "customer",
+          "x": 72,
+          "y": 40
+        },
+        {
+          "element": "carrier",
+          "x": 492,
+          "y": 40
+        },
+        {
+          "element": "enterprise",
+          "x": 40,
+          "y": 200,
+          "w": 632,
+          "h": 162
+        },
+        {
+          "element": "sender",
+          "x": 32,
+          "y": 56,
+          "parent": "enterprise"
+        },
+        {
+          "element": "parcel-service",
+          "x": 242,
+          "y": 56,
+          "parent": "enterprise"
+        },
+        {
+          "element": "depot",
+          "x": 452,
+          "y": 56,
+          "parent": "enterprise"
+        }
+      ]
+    },
+    {
+      "name": "Logical architecture",
+      "viewpoint": "layered",
+      "folder": "Parcel",
+      "documentation": "The booking and sorting behavior, and the applications that support it.",
+      "nodes": [
+        {
+          "element": "business",
+          "x": 40,
+          "y": 40,
+          "w": 632,
+          "h": 214
+        },
+        {
+          "element": "book",
+          "x": 32,
+          "y": 56,
+          "parent": "business"
+        },
+        {
+          "element": "sort",
+          "x": 242,
+          "y": 56,
+          "parent": "business"
+        },
+        {
+          "element": "parcel-file",
+          "x": 452,
+          "y": 56,
+          "parent": "business"
+        },
+        {
+          "element": "applications",
+          "x": 40,
+          "y": 334,
+          "w": 632,
+          "h": 362
+        },
+        {
+          "element": "booking-service",
+          "x": 32,
+          "y": 56,
+          "parent": "applications"
+        },
+        {
+          "element": "core",
+          "x": 242,
+          "y": 56,
+          "parent": "applications"
+        },
+        {
+          "element": "portal",
+          "x": 452,
+          "y": 56,
+          "parent": "applications"
+        },
+        {
+          "element": "parcel-record",
+          "x": 242,
+          "y": 256,
+          "parent": "applications"
+        },
+        {
+          "element": "booking-api",
+          "x": 452,
+          "y": 256,
+          "parent": "applications"
+        }
+      ],
+      "routes": [
+        {
+          "relationship": "book-file",
+          "points": [
+            {
+              "x": 146,
+              "y": 170
+            },
+            {
+              "x": 566,
+              "y": 170
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Infrastructure",
+      "viewpoint": "layered",
+      "folder": "Parcel",
+      "documentation": "The depot host, runtime, scanner, and network at a high level.",
+      "nodes": [
+        {
+          "element": "platform",
+          "x": 40,
+          "y": 40,
+          "w": 632,
+          "h": 394
+        },
+        {
+          "element": "depot",
+          "x": 32,
+          "y": 56,
+          "parent": "platform"
+        },
+        {
+          "element": "host",
+          "x": 242,
+          "y": 56,
+          "parent": "platform"
+        },
+        {
+          "element": "scanner",
+          "x": 452,
+          "y": 56,
+          "parent": "platform"
+        },
+        {
+          "element": "network",
+          "x": 32,
+          "y": 256,
+          "parent": "platform"
+        },
+        {
+          "element": "runtime",
+          "x": 242,
+          "y": 256,
+          "parent": "platform"
+        },
+        {
+          "element": "compute",
+          "x": 452,
+          "y": 256,
+          "parent": "platform"
+        }
+      ],
+      "routes": [
+        {
+          "relationship": "host-network",
+          "points": [
+            {
+              "x": 356,
+              "y": 170
+            },
+            {
+              "x": 146,
+              "y": 170
+            }
+          ]
+        },
+        {
+          "relationship": "compute-host",
+          "points": [
+            {
+              "x": 548,
+              "y": 192
+            },
+            {
+              "x": 374,
+              "y": 192
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
