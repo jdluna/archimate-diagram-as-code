@@ -65,6 +65,17 @@ that concept.
 { "id": "portal", "type": "application-component", "name": "Claims portal", "layer": "Application", "fillColor": "#c5e8ff" }
 ```
 
+A grouping takes the same `fillColor`. Archi's own default for a grouping is
+white (`#ffffff`), so the box looks unfilled until a colour is set. The
+colour covers the whole grouping. With `figure` left out, that is the dashed
+rectangle. With `"figure": "alternate"`, the same colour covers the tab and
+the body. Members are drawn on top, so the colour shows in the padding around
+them. A node `fillColor` replaces it for one view.
+
+```json
+{ "id": "motivation", "type": "grouping", "name": "Motivation", "layer": "Other", "fillColor": "#fff2cc" }
+```
+
 `figure` chooses which of Archi's two figures is drawn. Archi stores it on
 the box, so a node can use the other figure on one view. Leave it out, or set
 `default`, and the box is the figure Archi uses for a new element: a
@@ -237,7 +248,9 @@ Use this when a view is a context box, a motivation box, or a stack of layer
 boxes. `parcel-delivery.json` and `harbor-landscape.json` are the examples.
 The grouping is placed on the view. Each member comes later in `nodes`, with
 `parent` set to the grouping id. Member `x` and `y` are relative to the
-grouping, so they do not include the grouping's own position.
+grouping, so they do not include the grouping's own position. Set `fillColor`
+on the grouping element, or on this view node, to colour that box. The node
+colour wins when both are set.
 
 ```text
 columns = highest column + 1

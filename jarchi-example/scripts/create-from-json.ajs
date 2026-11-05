@@ -30,7 +30,10 @@
  * An element may set "fillColor" to "#rrggbb". Archi keeps that colour on
  * each box, not on the concept, so the script applies it to every view that
  * places the element. A node may set its own "fillColor" and that box uses
- * the node colour instead.
+ * the node colour instead. A grouping uses the same field. Archi paints the
+ * whole grouping with it, including the tab when the figure is alternate.
+ * The default grouping fill is white, so the box looks empty until a colour
+ * is set. Members are drawn on top of that fill.
  *
  * An element may set "figure" to "default" or "alternate". Archi stores the
  * figure on each box. "default" is the figure Archi draws when the field is
