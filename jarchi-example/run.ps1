@@ -101,11 +101,11 @@ foreach ($match in [regex]::Matches($xml, '<element\b[^>]*xsi:type="([^"]+)"')) 
     elseif ($type.EndsWith("Relationship")) { $relationships += 1 }
     elseif ($type.StartsWith("archimate:")) { $elements += 1 }
 }
-$nodes = [regex]::Matches($xml, 'archimateElement="').Count
+$nodes = [regex]::Matches($xml, 'archimateElement="').Count + [regex]::Matches($xml, 'xsi:type="archimate:Note"').Count
 $connections = [regex]::Matches($xml, '<sourceConnection\b').Count
 Write-Host "$Out ($kind)"
 Write-Host "  $elements elements, $relationships relationships, $views views"
 Write-Host "  $nodes diagram nodes, $connections diagram connections"
-if ($elements -lt 1 -or $views -lt 1 -or $nodes -lt 1) {
+if ($views -lt 1 -or $nodes -lt 1) {
     throw "The Archi file has no generated view"
 }

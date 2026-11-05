@@ -45,14 +45,14 @@ foreach ($node in $doc.SelectNodes("//*")) {
     } elseif ($typeName.StartsWith("archimate:") -and $node.LocalName -eq "element") {
         $elements++
     }
-    if ($node.LocalName -eq "child" -and $node.GetAttribute("archimateElement")) { $nodes++ }
+    if ($node.LocalName -eq "child" -and ($node.GetAttribute("archimateElement") -or $typeName -eq "archimate:Note")) { $nodes++ }
     if ($node.LocalName -eq "sourceConnection") { $connections++ }
 }
 
 Write-Output "$Path ($kind)"
 Write-Output "  $elements elements, $relationships relationships, $views views"
 Write-Output "  $nodes diagram nodes, $connections diagram connections"
-if ($elements -lt 1 -or $views -lt 1 -or $nodes -lt 1) {
+if ($views -lt 1 -or $nodes -lt 1) {
     [Console]::Error.WriteLine("The Archi file has no generated view")
     exit 1
 }

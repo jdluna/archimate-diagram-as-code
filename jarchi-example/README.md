@@ -11,8 +11,8 @@ the elements, relationships, and views. `model/claims.json` is the small
 landscape and writes `out/claims-handling.archimate`.
 `model/harbor-landscape.json` is the full landscape: a context diagram, a
 conceptual architecture, and a logical architecture, with every ArchiMate
-element type. Each area is a Grouping, and the concepts are nested in that
-box. It writes `out/harbor-landscape.archimate`.
+element type except Meaning, and one Note. Each area is a Grouping, and the
+concepts are nested in that box. It writes `out/harbor-landscape.archimate`.
 `model/parcel-delivery.json` is a parcel company drawn as four views: a
 conceptual architecture, a system context, a logical architecture, and a
 high-level infrastructure diagram. It writes `out/parcel-delivery.archimate`.

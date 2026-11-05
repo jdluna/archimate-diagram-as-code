@@ -6,9 +6,9 @@ diagram is a stack of rows on the canvas. [claims.md](claims.md) walks through
 that file against the rules in this guide. Copy `parcel-delivery.json` when
 each area is a Grouping with its concepts nested inside.
 [parcel-delivery.md](parcel-delivery.md) walks through that file.
-`harbor-landscape.json` contains one element of every ArchiMate type, so it
-is the catalogue of type names. [harbor-landscape.md](harbor-landscape.md)
-walks through that file.
+`harbor-landscape.json` contains one element of every ArchiMate type in the
+table below except Meaning. The sentence on the conceptual view is Archi's
+Note. [harbor-landscape.md](harbor-landscape.md) walks through that file.
 
 ```bash
 cd jarchi-example
@@ -109,6 +109,18 @@ in the Architecture Views and Viewpoints chapter.
 
 Archi stores one Junction class. `or-junction` and `and-junction` are created
 as `junction`, and the script then sets the junction type to `or` or `and`.
+
+`note` is Archi's Note. It is drawn on the views that place it, and it is not
+an ArchiMate concept, so `layer` and `folder` are ignored and a relationship
+cannot use its id. `name` is the text in the note. `border` is `dogear` (the
+folded corner Archi draws when the field is left out), `rectangle`, or
+`none`. `fillColor` paints that note. `figure` is rejected. A note cannot
+contain other objects, and it can still sit inside a grouping with `parent`.
+Each view that places the same id gets its own note with the same text.
+
+```json
+{ "id": "claim-note", "type": "note", "name": "A claim is a request to pay", "border": "dogear", "fillColor": "#ffffb5" }
+```
 
 `harbor-landscape.json` has every concept the samples use:
 

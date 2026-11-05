@@ -116,11 +116,9 @@
       "folder": "Harbor"
     },
     {
-      "id": "meaning",
-      "type": "meaning",
-      "name": "A claim is a request to pay",
-      "layer": "Motivation",
-      "folder": "Harbor"
+      "id": "claim-note",
+      "type": "note",
+      "name": "A claim is a request to pay"
     },
     {
       "id": "trust",
@@ -631,18 +629,6 @@
       "target": "record-claim"
     },
     {
-      "id": "meaning-trust",
-      "type": "association-relationship",
-      "source": "meaning",
-      "target": "trust"
-    },
-    {
-      "id": "meaning-file",
-      "type": "association-relationship",
-      "source": "meaning",
-      "target": "claim-file"
-    },
-    {
       "id": "staff-capability",
       "type": "assignment-relationship",
       "source": "staff",
@@ -1110,13 +1096,6 @@
       "draw": false
     },
     {
-      "id": "motivation-group-aggregates-meaning",
-      "type": "aggregation-relationship",
-      "source": "motivation-group",
-      "target": "meaning",
-      "draw": false
-    },
-    {
       "id": "motivation-group-aggregates-trust",
       "type": "aggregation-relationship",
       "source": "motivation-group",
@@ -1551,7 +1530,7 @@
           "parent": "motivation-group"
         },
         {
-          "element": "meaning",
+          "element": "claim-note",
           "x": 872,
           "y": 256,
           "parent": "motivation-group"

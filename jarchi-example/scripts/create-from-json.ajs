@@ -39,6 +39,11 @@
  * figure on each box. "default" is the figure Archi draws when the field is
  * left out. "alternate" is the other figure Archi offers for that concept.
  * A node may set its own "figure". A junction has no alternate figure.
+ *
+ * An element may set "type" to "note". That is Archi's Note, a dog-eared box
+ * that exists only on the views that place it. It is not an ArchiMate concept,
+ * so it has no folder and it cannot be the end of a relationship. "name" is
+ * the text inside the note. "border" is "dogear", "rectangle", or "none".
  */
 
 var Files = Java.type("java.nio.file.Files");
@@ -187,6 +192,25 @@ function junctionType(specType) {
     return specType === "junction" || specType === "or-junction" || specType === "and-junction";
 }
 
+// Archi's Note is a view object. 0 is the dog-ear, 1 is a rectangle, 2 has
+// no border. jArchi rejects any other value.
+var NOTE_BORDERS = {
+    "dogear": 0,
+    "rectangle": 1,
+    "none": 2
+};
+
+function noteBorder(value, owner) {
+    if (value === undefined || value === null || value === "") {
+        return null;
+    }
+    var name = String(value);
+    if (!Object.prototype.hasOwnProperty.call(NOTE_BORDERS, name)) {
+        fail(owner + " border must be dogear, rectangle, or none, got '" + name + "'");
+    }
+    return NOTE_BORDERS[name];
+}
+
 function diagramCenters(nodeList) {
     // jArchi does not expose the visual parent of a nested diagram object, so
     // the view coordinates are taken from the JSON. Child x and y are added to
@@ -254,6 +278,8 @@ if (data.purpose) {
 }
 
 var elements = {};
+var notes = {};
+var noteBorders = {};
 var elementColors = {};
 var elementFigures = {};
 var elementTypes = {};
@@ -261,8 +287,16 @@ var elementList = data.elements || [];
 for (var i = 0; i < elementList.length; i++) {
     var spec = elementList[i];
     elementColors[spec.id] = fillColor(spec.fillColor, "Element '" + spec.id + "'");
-    elementFigures[spec.id] = figureType(spec.figure, "Element '" + spec.id + "'");
     elementTypes[spec.id] = spec.type;
+    if (spec.type === "note") {
+        if (spec.figure) {
+            fail("Element '" + spec.id + "' is a note and has no figure. Set border to dogear, rectangle, or none");
+        }
+        notes[spec.id] = spec.name || "";
+        noteBorders[spec.id] = noteBorder(spec.border, "Element '" + spec.id + "'");
+        continue;
+    }
+    elementFigures[spec.id] = figureType(spec.figure, "Element '" + spec.id + "'");
     if (elementFigures[spec.id] === 1 && junctionType(spec.type)) {
         fail("Element '" + spec.id + "' is a junction and has no alternate figure");
     }
@@ -288,6 +322,13 @@ var relationships = {};
 var relationshipList = data.relationships || [];
 for (var r = 0; r < relationshipList.length; r++) {
     var link = relationshipList[r];
+    if (elementTypes[link.source] === "note" || elementTypes[link.target] === "note") {
+        var noteId = elementTypes[link.source] === "note" ? link.source : link.target;
+        fail(
+            "Relationship '" + link.id + "' uses note '" + noteId +
+            "'. A note is drawn on a view and cannot be the end of a relationship"
+        );
+    }
     var source = requireElement(elements, link.source);
     var target = requireElement(elements, link.target);
     var relationship;
@@ -313,9 +354,18 @@ for (var v = 0; v < viewList.length; v++) {
     var nodeList = viewSpec.nodes || [];
     for (var n = 0; n < nodeList.length; n++) {
         var nodeSpec = nodeList[n];
-        var concept = requireElement(elements, nodeSpec.element);
+        if (!elementTypes[nodeSpec.element]) {
+            fail("JSON refers to unknown element id '" + nodeSpec.element + "'");
+        }
         var container = view;
         if (nodeSpec.parent) {
+            if (elementTypes[nodeSpec.parent] === "note") {
+                fail(
+                    "Node '" + nodeSpec.element + "' on view '" + viewSpec.name +
+                    "' is nested in note '" + nodeSpec.parent +
+                    "'. A note cannot contain other objects"
+                );
+            }
             container = nodes[nodeSpec.parent];
             if (!container) {
                 fail(
@@ -326,6 +376,61 @@ for (var v = 0; v < viewList.length; v++) {
             }
         }
         var diagramObject;
+        if (elementTypes[nodeSpec.element] === "note") {
+            if (nodeSpec.figure) {
+                fail(
+                    "Node '" + nodeSpec.element + "' on view '" + viewSpec.name +
+                    "' is a note and has no figure. Set border to dogear, rectangle, or none"
+                );
+            }
+            try {
+                diagramObject = container.createObject(
+                    "note",
+                    nodeSpec.x || 0,
+                    nodeSpec.y || 0,
+                    nodeSpec.w || NODE_WIDTH,
+                    nodeSpec.h || NODE_HEIGHT
+                );
+                diagramObject.setText(notes[nodeSpec.element]);
+                diagramObject.prop("json-id", nodeSpec.element);
+            } catch (error) {
+                fail("Could not place note '" + nodeSpec.element + "' on view '" + viewSpec.name + "': " + error);
+            }
+            nodes[nodeSpec.element] = diagramObject;
+            var noteColor = fillColor(
+                nodeSpec.fillColor,
+                "Node '" + nodeSpec.element + "' on view '" + viewSpec.name + "'"
+            ) || elementColors[nodeSpec.element];
+            if (noteColor) {
+                try {
+                    diagramObject.setFillColor(noteColor);
+                } catch (error) {
+                    fail(
+                        "Could not set fillColor '" + noteColor + "' on '" + nodeSpec.element +
+                        "' in view '" + viewSpec.name + "': " + error
+                    );
+                }
+            }
+            var border = noteBorder(
+                nodeSpec.border,
+                "Node '" + nodeSpec.element + "' on view '" + viewSpec.name + "'"
+            );
+            if (border === null) {
+                border = noteBorders[nodeSpec.element];
+            }
+            if (border !== null) {
+                try {
+                    diagramObject.setBorderType(Integer.valueOf(border));
+                } catch (error) {
+                    fail(
+                        "Could not set border on '" + nodeSpec.element +
+                        "' in view '" + viewSpec.name + "': " + error
+                    );
+                }
+            }
+            continue;
+        }
+        var concept = requireElement(elements, nodeSpec.element);
         try {
             diagramObject = container.add(
                 concept,

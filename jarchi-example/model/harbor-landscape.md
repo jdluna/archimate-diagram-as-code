@@ -2,7 +2,8 @@
 
 `harbor-landscape.json` is the catalogue from [README.md](README.md). A Harbor
 insurer settles motor claims. The file has one element of every ArchiMate
-type the guide lists, one relationship of every type, and three views. Each
+type the guide lists except Meaning, one Note, one relationship of every
+type, and three views. Each
 area is a Grouping, as in [parcel-delivery.md](parcel-delivery.md). The
 canvas is not a flat stack of rows, as in [claims.md](claims.md).
 
@@ -28,8 +29,8 @@ the ones Archi 5.3 accepts.
 |---|---|
 | `name` | `Harbor claims landscape`, stored as the Archi model name |
 | `purpose` | The sentence about the insurer, the context, the conceptual view, and the logical view |
-| `elements` | 71 concepts, covering all 63 types in the guide |
-| `relationships` | 143 links. 61 of them are aggregations with `"draw": false` |
+| `elements` | 70 ArchiMate concepts, covering 62 of the 63 types in the guide, and 1 note |
+| `relationships` | 140 links. 60 of them are aggregations with `"draw": false` |
 | `views` | Context diagram, Conceptual architecture, Logical architecture |
 
 Every element id and relationship id is unique. A route names a relationship
@@ -131,8 +132,13 @@ becomes an Or junction, `intake-join` becomes an And junction, and
 | `straight-through` | `principle` | Straight-through handling |
 | `record-claim` | `requirement` | Record every claim |
 | `retain` | `constraint` | Retain claim data |
-| `meaning` | `meaning` | A claim is a request to pay |
 | `trust` | `value` | Trust |
+
+The sentence "A claim is a request to pay" is Archi's Note, `claim-note`,
+with `type` set to `note`. A note has no `layer` and no `folder`. It is
+created on the conceptual view, inside `motivation-group`. A relationship
+cannot use its id. The guide still accepts `type: "meaning"` when the
+concept itself is a Meaning.
 
 ### Strategy
 
@@ -194,15 +200,18 @@ counts follow the boxes:
 | Grouping | Hidden aggregations | Members on the view |
 |---|---|---|
 | `enterprise` | 8 | 8 |
-| `motivation-group` | 10 | 10 |
+| `motivation-group` | 9 | 10 |
 | `strategy-group` | 4 | 4 |
 | `business-group` | 7 | 9 |
 | `application-group` | 10 | 11 |
 | `platform-group` | 17 | 17 |
 | `change-group` | 5 | 5 |
 
+`motivation-group` has one fewer aggregation than members. The missing
+member is `claim-note`. A note is not an ArchiMate concept, so the grouping
+cannot aggregate it. The note is still nested: its node sets `parent`.
 `business-group` has two fewer aggregations than members, and
-`application-group` has one fewer. The missing targets are the three
+`application-group` has one fewer. Those missing targets are the three
 junctions. A junction carries one relationship type. `channel-choice` and
 `intake-split` already have triggering. `intake-join` already has flow. An
 aggregation from the grouping onto that junction is rejected on Archi 5.3.
@@ -324,7 +333,7 @@ Conceptual, inside Motivation, then Strategy:
 | | 0 | 1 | 2 | 3 | 4 | 5 |
 |---|---|---|---|---|---|---|
 | row 0 | director | speed | cycle-gap | faster | | |
-| row 1 | five-days | straight-through | record-claim | retain | meaning | trust |
+| row 1 | five-days | straight-through | record-claim | retain | claim-note | trust |
 
 | | 0 | 1 | 2 |
 |---|---|---|---|
@@ -394,7 +403,6 @@ Four lines, and the view has no `routes` key.
 | `principle-goal` | second row, neighbouring columns |
 | `principle-requirement` | second row, neighbouring columns |
 | `constraint-requirement` | second row, neighbouring columns |
-| `meaning-trust` | second row, neighbouring columns |
 | `staff-capability` | strategy top row, neighbouring columns |
 | `staff-course` | strategy column 1, one row apart |
 | `capability-goal` | column 0, from Strategy up to Motivation |
