@@ -5,6 +5,7 @@ jarchi-example/**/out/
 jarchi-example/**/local.env
 jarchi-example/**/sdkman-download/
 jarchi-example/windows/src/
+jarchi-example/windows/p2-jars/
 
 # pyarchimate
 pyarchimate/**/.venv/
