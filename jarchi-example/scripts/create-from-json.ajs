@@ -22,8 +22,10 @@
  * A view may set "routes". Each route names a relationship id and a list of
  * bendpoints in view coordinates. The line leaves the source, passes through
  * those points, and enters the target. That is how a long line travels in the
- * empty band between rows instead of through another element. jArchi stores
- * each point as an offset from the source centre and from the target centre.
+ * empty band between the rows instead of through another element. Nested x and y
+ * are relative to the parent, and a route point is measured from the view.
+ * jArchi stores each point as an offset from the source centre and from the
+ * target centre.
  */
 
 var Files = Java.type("java.nio.file.Files");
@@ -139,26 +141,46 @@ function requireElement(index, id) {
     return index[id];
 }
 
-function absoluteCenter(diagramObject) {
-    // Nested objects store x and y relative to their parent. Bendpoints are
-    // offsets from each end's centre on the view, so walk up to the view.
-    var x = diagramObject.bounds.x;
-    var y = diagramObject.bounds.y;
-    var parent = diagramObject.parent;
-    while (parent && parent.type !== "archimate-diagram-model") {
-        x += parent.bounds.x;
-        y += parent.bounds.y;
-        parent = parent.parent;
+function diagramCenters(nodeList) {
+    // jArchi does not expose the visual parent of a nested diagram object, so
+    // the view coordinates are taken from the JSON. Child x and y are added to
+    // each ancestor's top-left.
+    var specs = {};
+    for (var i = 0; i < nodeList.length; i++) {
+        specs[nodeList[i].element] = nodeList[i];
     }
-    return {
-        x: x + diagramObject.bounds.width / 2,
-        y: y + diagramObject.bounds.height / 2
-    };
+    var origins = {};
+    function origin(id) {
+        if (origins[id]) {
+            return origins[id];
+        }
+        var spec = specs[id];
+        if (!spec) {
+            fail("Route refers to '" + id + "', which is not on this view");
+        }
+        var x = spec.x || 0;
+        var y = spec.y || 0;
+        if (spec.parent) {
+            var parentOrigin = origin(spec.parent);
+            x += parentOrigin.x;
+            y += parentOrigin.y;
+        }
+        origins[id] = {x: x, y: y};
+        return origins[id];
+    }
+    var centers = {};
+    for (var id in specs) {
+        var spec = specs[id];
+        var at = origin(id);
+        centers[id] = {
+            x: at.x + (spec.w || NODE_WIDTH) / 2,
+            y: at.y + (spec.h || NODE_HEIGHT) / 2
+        };
+    }
+    return centers;
 }
 
-function relativeBendpoint(absX, absY, sourceNode, targetNode) {
-    var source = absoluteCenter(sourceNode);
-    var target = absoluteCenter(targetNode);
+function relativeBendpoint(absX, absY, source, target) {
     var point = new HashMap();
     point.put("startX", Integer.valueOf(Math.round(absX - source.x)));
     point.put("startY", Integer.valueOf(Math.round(absY - source.y)));
@@ -280,22 +302,32 @@ for (var v = 0; v < viewList.length; v++) {
         }
     }
 
+    var centers = diagramCenters(nodeList);
     var routes = viewSpec.routes || [];
     for (var routeIndex = 0; routeIndex < routes.length; routeIndex++) {
         var route = routes[routeIndex];
         var connection = connections[route.relationship];
-        if (!connection) {
+        var link = null;
+        for (var linkIndex = 0; linkIndex < relationshipList.length; linkIndex++) {
+            if (relationshipList[linkIndex].id === route.relationship) {
+                link = relationshipList[linkIndex];
+                break;
+            }
+        }
+        if (!connection || !link) {
             fail(
                 "View '" + viewSpec.name + "' routes '" + route.relationship +
                 "', which is not drawn on that view"
             );
         }
+        var sourceCenter = centers[link.source];
+        var targetCenter = centers[link.target];
         var points = route.points || [];
         for (var pointIndex = 0; pointIndex < points.length; pointIndex++) {
             var point = points[pointIndex];
             try {
                 connection.addRelativeBendpoint(
-                    relativeBendpoint(point.x, point.y, connection.source, connection.target),
+                    relativeBendpoint(point.x, point.y, sourceCenter, targetCenter),
                     pointIndex
                 );
             } catch (error) {
