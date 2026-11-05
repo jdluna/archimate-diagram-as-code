@@ -271,7 +271,21 @@ while IFS='|' read -r bundle_id bundle_version group artifact maven_version; do
   [[ -z "$bundle_id" || "$bundle_id" == \#* ]] && continue
   group_path="${group//.//}"
   src="${local_repo}/${group_path}/${artifact}/${maven_version}/${artifact}-${maven_version}.jar"
-  dest="${local_repo}/p2/osgi/bundle/${bundle_id}/${bundle_version}/${bundle_id}-${bundle_version}.jar"
+  dest_dir="${local_repo}/p2/osgi/bundle/${bundle_id}/${bundle_version}"
+  dest="${dest_dir}/${bundle_id}-${bundle_version}.jar"
+  # org.eclipse.equinox.security.macosx is the case that matters: the Maven
+  # Central jar has the same size and a different checksum from the p2 plug-in.
+  # Tycho rejects it and downloads download.eclipse.org, which returns HTTP 403.
+  exact="${ROOT}/p2-jars/${bundle_id}/${bundle_version}/${bundle_id}-${bundle_version}.jar"
+  if [[ -f "$exact" ]]; then
+    mkdir -p "$(dirname "$src")" "$dest_dir"
+    cp -f "$exact" "$src"
+    cp -f "$exact" "$dest"
+    rm -f "${src}.sha1" "${src}.sha256" "${src}.lastUpdated" \
+      "${dest}.sha1" "${dest}.sha256" "${dest}.lastUpdated" \
+      "${dest_dir}/"*-p2artifacts.xml
+    continue
+  fi
   # A proxy 403 can leave an HTML page in the local repo. That file is not a jar,
   # and copying it makes Tycho ask download.eclipse.org again.
   if [[ ! -f "$src" ]] || [[ "$(head -c 2 "$src" 2>/dev/null || true)" != "PK" ]]; then
@@ -298,9 +312,12 @@ done
 # Exact bytes of every Archi 5.3 target plug-in. Maven Central copies are not
 # enough: a bad cache file makes Tycho download from download.eclipse.org, which
 # returns HTTP 403. p2-jars overwrites that cache.
-while IFS='|' read -r bundle_id bundle_version _expected_sha1 _expected_sha256; do
+while IFS='|' read -r bundle_id bundle_version _expected_sha1 _expected_sha256 p2_group p2_artifact p2_version; do
   bundle_id="${bundle_id//$'\r'/}"
   bundle_version="${bundle_version//$'\r'/}"
+  p2_group="${p2_group//$'\r'/}"
+  p2_artifact="${p2_artifact//$'\r'/}"
+  p2_version="${p2_version//$'\r'/}"
   [[ -z "$bundle_id" || "$bundle_id" == \#* ]] && continue
   bundled="${ROOT}/p2-jars/${bundle_id}/${bundle_version}/${bundle_id}-${bundle_version}.jar"
   dest_dir="${local_repo}/p2/osgi/bundle/${bundle_id}/${bundle_version}"
@@ -314,7 +331,39 @@ while IFS='|' read -r bundle_id bundle_version _expected_sha1 _expected_sha256; 
   # asks download.eclipse.org again, which is what fails org.w3c.dom.svg.
   mkdir -p "$dest_dir"
   cp -f "$bundled" "$dest"
-  rm -f "${dest_dir}/"*.lastUpdated "${dest}.sha1" "${dest}.sha256"
+  rm -f "${dest_dir}/"*.lastUpdated "${dest}.sha1" "${dest}.sha256" "${dest_dir}/"*-p2artifacts.xml
+  # p2 also names this plug-in with a Maven snapshot coordinate, for example
+  # org.eclipse.equinox:org.eclipse.equinox.security.macosx:1.101.400-SNAPSHOT.
+  if [[ -n "$p2_group" && -n "$p2_artifact" && -n "$p2_version" ]]; then
+    p2_maven_dir="${local_repo}/${p2_group//.//}/${p2_artifact}/${p2_version}"
+    mkdir -p "$p2_maven_dir"
+    cp -f "$bundled" "${p2_maven_dir}/${p2_artifact}-${p2_version}.jar"
+    rm -f "${p2_maven_dir}/${p2_artifact}-${p2_version}.jar.sha1" \
+      "${p2_maven_dir}/${p2_artifact}-${p2_version}.jar.sha256" \
+      "${p2_maven_dir}/${p2_artifact}-${p2_version}.jar.lastUpdated" \
+      "${p2_maven_dir}/"*-p2artifacts.xml
+    if [[ "$p2_version" == *SNAPSHOT ]]; then
+      cat > "${p2_maven_dir}/maven-metadata-local.xml" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>${p2_group}</groupId>
+  <artifactId>${p2_artifact}</artifactId>
+  <version>${p2_version}</version>
+  <versioning>
+    <snapshot><localCopy>true</localCopy></snapshot>
+    <lastUpdated>20261105000000</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>${p2_version}</value>
+        <updated>20261105000000</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>
+EOF
+    fi
+  fi
 done < "$ROOT/target-bundles.txt"
 
 # A failed download records the plug-in in Tycho's index. The next build then
