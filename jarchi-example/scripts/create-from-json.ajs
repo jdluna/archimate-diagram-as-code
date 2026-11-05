@@ -18,11 +18,19 @@
  * A relationship may set "draw": false to stay in the model without a line
  * on the views. Grouping aggregations use that so the box itself shows
  * membership.
+ *
+ * A view may set "routes". Each route names a relationship id and a list of
+ * bendpoints in view coordinates. The line leaves the source, passes through
+ * those points, and enters the target. That is how a long line travels in the
+ * empty band between rows instead of through another element. jArchi stores
+ * each point as an offset from the source centre and from the target centre.
  */
 
 var Files = Java.type("java.nio.file.Files");
 var Paths = Java.type("java.nio.file.Paths");
 var JString = Java.type("java.lang.String");
+var Integer = Java.type("java.lang.Integer");
+var HashMap = Java.type("java.util.HashMap");
 var System = Java.type("java.lang.System");
 
 // Archi 5 names the technology folder "Technology & Physical". The JSON
@@ -131,6 +139,34 @@ function requireElement(index, id) {
     return index[id];
 }
 
+function absoluteCenter(diagramObject) {
+    // Nested objects store x and y relative to their parent. Bendpoints are
+    // offsets from each end's centre on the view, so walk up to the view.
+    var x = diagramObject.bounds.x;
+    var y = diagramObject.bounds.y;
+    var parent = diagramObject.parent;
+    while (parent && parent.type !== "archimate-diagram-model") {
+        x += parent.bounds.x;
+        y += parent.bounds.y;
+        parent = parent.parent;
+    }
+    return {
+        x: x + diagramObject.bounds.width / 2,
+        y: y + diagramObject.bounds.height / 2
+    };
+}
+
+function relativeBendpoint(absX, absY, sourceNode, targetNode) {
+    var source = absoluteCenter(sourceNode);
+    var target = absoluteCenter(targetNode);
+    var point = new HashMap();
+    point.put("startX", Integer.valueOf(Math.round(absX - source.x)));
+    point.put("startY", Integer.valueOf(Math.round(absY - source.y)));
+    point.put("endX", Integer.valueOf(Math.round(absX - target.x)));
+    point.put("endY", Integer.valueOf(Math.round(absY - target.y)));
+    return point;
+}
+
 var jsonPath = argumentValue("--json");
 if (!jsonPath) {
     fail("Missing --json <file>. Example: --json /path/to/claims.json");
@@ -225,6 +261,7 @@ for (var v = 0; v < viewList.length; v++) {
         }
     }
 
+    var connections = {};
     for (var c = 0; c < relationshipList.length; c++) {
         var relSpec = relationshipList[c];
         if (relSpec.draw === false) {
@@ -232,9 +269,40 @@ for (var v = 0; v < viewList.length; v++) {
         }
         if (nodes[relSpec.source] && nodes[relSpec.target]) {
             try {
-                view.add(relationships[relSpec.id], nodes[relSpec.source], nodes[relSpec.target]);
+                connections[relSpec.id] = view.add(
+                    relationships[relSpec.id],
+                    nodes[relSpec.source],
+                    nodes[relSpec.target]
+                );
             } catch (error) {
                 fail("Could not draw '" + relSpec.id + "' on view '" + viewSpec.name + "': " + error);
+            }
+        }
+    }
+
+    var routes = viewSpec.routes || [];
+    for (var routeIndex = 0; routeIndex < routes.length; routeIndex++) {
+        var route = routes[routeIndex];
+        var connection = connections[route.relationship];
+        if (!connection) {
+            fail(
+                "View '" + viewSpec.name + "' routes '" + route.relationship +
+                "', which is not drawn on that view"
+            );
+        }
+        var points = route.points || [];
+        for (var pointIndex = 0; pointIndex < points.length; pointIndex++) {
+            var point = points[pointIndex];
+            try {
+                connection.addRelativeBendpoint(
+                    relativeBendpoint(point.x, point.y, connection.source, connection.target),
+                    pointIndex
+                );
+            } catch (error) {
+                fail(
+                    "Could not route '" + route.relationship + "' on view '" + viewSpec.name +
+                    "': " + error
+                );
             }
         }
     }

@@ -2,63 +2,371 @@
   "name": "Claims handling",
   "purpose": "Generated from model/claims.json by scripts/create-from-json.ajs. A policyholder registers a claim, a handler assesses it, and the claims applications run on one node.",
   "elements": [
-    {"id": "customer", "type": "business-actor", "name": "Customer", "layer": "Business", "folder": "Claims", "documentation": "Person who holds the policy and reports the loss."},
-    {"id": "policyholder", "type": "business-role", "name": "Policyholder", "layer": "Business", "folder": "Claims"},
-    {"id": "handler", "type": "business-role", "name": "Claims handler", "layer": "Business", "folder": "Claims"},
-    {"id": "register", "type": "business-process", "name": "Register claim", "layer": "Business", "folder": "Claims"},
-    {"id": "assess", "type": "business-process", "name": "Assess claim", "layer": "Business", "folder": "Claims"},
-    {"id": "claim-file", "type": "business-object", "name": "Claim file", "layer": "Business", "folder": "Claims"},
-
-    {"id": "portal", "type": "application-component", "name": "Claims portal", "layer": "Application", "folder": "Claims"},
-    {"id": "core", "type": "application-component", "name": "Claims core", "layer": "Application", "folder": "Claims"},
-    {"id": "api", "type": "application-interface", "name": "Claims API", "layer": "Application", "folder": "Claims"},
-    {"id": "service", "type": "application-service", "name": "Claims service", "layer": "Application", "folder": "Claims"},
-    {"id": "record", "type": "data-object", "name": "Claim record", "layer": "Application", "folder": "Claims"},
-
-    {"id": "runtime", "type": "system-software", "name": "Claims runtime", "layer": "Technology", "folder": "Claims"},
-    {"id": "node", "type": "node", "name": "Claims node", "layer": "Technology", "folder": "Claims"},
-    {"id": "platform", "type": "technology-service", "name": "Claims platform", "layer": "Technology", "folder": "Claims"}
+    {
+      "id": "customer",
+      "type": "business-actor",
+      "name": "Customer",
+      "layer": "Business",
+      "folder": "Claims",
+      "documentation": "Person who holds the policy and reports the loss."
+    },
+    {
+      "id": "policyholder",
+      "type": "business-role",
+      "name": "Policyholder",
+      "layer": "Business",
+      "folder": "Claims"
+    },
+    {
+      "id": "handler",
+      "type": "business-role",
+      "name": "Claims handler",
+      "layer": "Business",
+      "folder": "Claims"
+    },
+    {
+      "id": "register",
+      "type": "business-process",
+      "name": "Register claim",
+      "layer": "Business",
+      "folder": "Claims"
+    },
+    {
+      "id": "assess",
+      "type": "business-process",
+      "name": "Assess claim",
+      "layer": "Business",
+      "folder": "Claims"
+    },
+    {
+      "id": "claim-file",
+      "type": "business-object",
+      "name": "Claim file",
+      "layer": "Business",
+      "folder": "Claims"
+    },
+    {
+      "id": "portal",
+      "type": "application-component",
+      "name": "Claims portal",
+      "layer": "Application",
+      "folder": "Claims"
+    },
+    {
+      "id": "core",
+      "type": "application-component",
+      "name": "Claims core",
+      "layer": "Application",
+      "folder": "Claims"
+    },
+    {
+      "id": "api",
+      "type": "application-interface",
+      "name": "Claims API",
+      "layer": "Application",
+      "folder": "Claims"
+    },
+    {
+      "id": "service",
+      "type": "application-service",
+      "name": "Claims service",
+      "layer": "Application",
+      "folder": "Claims"
+    },
+    {
+      "id": "record",
+      "type": "data-object",
+      "name": "Claim record",
+      "layer": "Application",
+      "folder": "Claims"
+    },
+    {
+      "id": "runtime",
+      "type": "system-software",
+      "name": "Claims runtime",
+      "layer": "Technology",
+      "folder": "Claims"
+    },
+    {
+      "id": "node",
+      "type": "node",
+      "name": "Claims node",
+      "layer": "Technology",
+      "folder": "Claims"
+    },
+    {
+      "id": "platform",
+      "type": "technology-service",
+      "name": "Claims platform",
+      "layer": "Technology",
+      "folder": "Claims"
+    }
   ],
   "relationships": [
-    {"id": "customer-role", "type": "assignment-relationship", "source": "customer", "target": "policyholder"},
-    {"id": "handler-register", "type": "assignment-relationship", "source": "handler", "target": "register"},
-    {"id": "handler-assess", "type": "assignment-relationship", "source": "handler", "target": "assess"},
-    {"id": "register-triggers-assess", "type": "triggering-relationship", "name": "claim registered", "source": "register", "target": "assess"},
-    {"id": "register-file", "type": "access-relationship", "source": "register", "target": "claim-file"},
-    {"id": "assess-file", "type": "access-relationship", "source": "assess", "target": "claim-file"},
-    {"id": "portal-core", "type": "flow-relationship", "name": "submit claim", "source": "portal", "target": "core"},
-    {"id": "core-api", "type": "composition-relationship", "source": "core", "target": "api"},
-    {"id": "core-service", "type": "realization-relationship", "source": "core", "target": "service"},
-    {"id": "api-policyholder", "type": "serving-relationship", "source": "api", "target": "policyholder"},
-    {"id": "service-register", "type": "serving-relationship", "name": "registers", "source": "service", "target": "register"},
-    {"id": "service-assess", "type": "serving-relationship", "name": "assesses", "source": "service", "target": "assess"},
-    {"id": "core-record", "type": "access-relationship", "source": "core", "target": "record"},
-    {"id": "node-runtime", "type": "assignment-relationship", "source": "node", "target": "runtime"},
-    {"id": "node-platform", "type": "realization-relationship", "source": "node", "target": "platform"},
-    {"id": "platform-portal", "type": "serving-relationship", "source": "platform", "target": "portal"},
-    {"id": "platform-core", "type": "serving-relationship", "source": "platform", "target": "core"}
+    {
+      "id": "customer-role",
+      "type": "assignment-relationship",
+      "source": "customer",
+      "target": "policyholder"
+    },
+    {
+      "id": "handler-register",
+      "type": "assignment-relationship",
+      "source": "handler",
+      "target": "register"
+    },
+    {
+      "id": "handler-assess",
+      "type": "assignment-relationship",
+      "source": "handler",
+      "target": "assess"
+    },
+    {
+      "id": "register-triggers-assess",
+      "type": "triggering-relationship",
+      "name": "claim registered",
+      "source": "register",
+      "target": "assess"
+    },
+    {
+      "id": "register-file",
+      "type": "access-relationship",
+      "source": "register",
+      "target": "claim-file"
+    },
+    {
+      "id": "assess-file",
+      "type": "access-relationship",
+      "source": "assess",
+      "target": "claim-file"
+    },
+    {
+      "id": "portal-core",
+      "type": "flow-relationship",
+      "name": "submit claim",
+      "source": "portal",
+      "target": "core"
+    },
+    {
+      "id": "core-api",
+      "type": "composition-relationship",
+      "source": "core",
+      "target": "api"
+    },
+    {
+      "id": "core-service",
+      "type": "realization-relationship",
+      "source": "core",
+      "target": "service"
+    },
+    {
+      "id": "api-policyholder",
+      "type": "serving-relationship",
+      "source": "api",
+      "target": "policyholder"
+    },
+    {
+      "id": "service-register",
+      "type": "serving-relationship",
+      "name": "registers",
+      "source": "service",
+      "target": "register"
+    },
+    {
+      "id": "service-assess",
+      "type": "serving-relationship",
+      "name": "assesses",
+      "source": "service",
+      "target": "assess"
+    },
+    {
+      "id": "core-record",
+      "type": "access-relationship",
+      "source": "core",
+      "target": "record"
+    },
+    {
+      "id": "runtime-node",
+      "type": "assignment-relationship",
+      "source": "runtime",
+      "target": "node"
+    },
+    {
+      "id": "node-platform",
+      "type": "realization-relationship",
+      "source": "node",
+      "target": "platform"
+    },
+    {
+      "id": "platform-portal",
+      "type": "serving-relationship",
+      "source": "platform",
+      "target": "portal"
+    },
+    {
+      "id": "platform-core",
+      "type": "serving-relationship",
+      "source": "platform",
+      "target": "core"
+    }
   ],
   "views": [
     {
       "name": "Layered view",
       "viewpoint": "layered",
       "folder": "Claims",
-      "documentation": "Business, application, and technology bands.",
+      "documentation": "Business, application, and technology bands for the claims landscape.",
       "nodes": [
-        {"element": "customer", "x": 40, "y": 40},
-        {"element": "policyholder", "x": 208, "y": 40},
-        {"element": "handler", "x": 376, "y": 40},
-        {"element": "register", "x": 544, "y": 40},
-        {"element": "assess", "x": 712, "y": 40},
-        {"element": "claim-file", "x": 880, "y": 40},
-        {"element": "portal", "x": 40, "y": 200},
-        {"element": "api", "x": 208, "y": 200},
-        {"element": "core", "x": 376, "y": 200},
-        {"element": "service", "x": 544, "y": 200},
-        {"element": "record", "x": 712, "y": 200},
-        {"element": "runtime", "x": 40, "y": 360},
-        {"element": "node", "x": 208, "y": 360},
-        {"element": "platform", "x": 376, "y": 360}
+        {
+          "element": "customer",
+          "x": 40,
+          "y": 40
+        },
+        {
+          "element": "policyholder",
+          "x": 250,
+          "y": 40
+        },
+        {
+          "element": "handler",
+          "x": 670,
+          "y": 40
+        },
+        {
+          "element": "register",
+          "x": 460,
+          "y": 210
+        },
+        {
+          "element": "assess",
+          "x": 670,
+          "y": 210
+        },
+        {
+          "element": "claim-file",
+          "x": 880,
+          "y": 210
+        },
+        {
+          "element": "api",
+          "x": 670,
+          "y": 380
+        },
+        {
+          "element": "portal",
+          "x": 460,
+          "y": 520
+        },
+        {
+          "element": "core",
+          "x": 670,
+          "y": 520
+        },
+        {
+          "element": "service",
+          "x": 880,
+          "y": 520
+        },
+        {
+          "element": "record",
+          "x": 1090,
+          "y": 520
+        },
+        {
+          "element": "runtime",
+          "x": 40,
+          "y": 740
+        },
+        {
+          "element": "node",
+          "x": 250,
+          "y": 740
+        },
+        {
+          "element": "platform",
+          "x": 460,
+          "y": 740
+        }
+      ],
+      "routes": [
+        {
+          "relationship": "register-file",
+          "points": [
+            {
+              "x": 534,
+              "y": 170
+            },
+            {
+              "x": 954,
+              "y": 170
+            }
+          ]
+        },
+        {
+          "relationship": "api-policyholder",
+          "points": [
+            {
+              "x": 744,
+              "y": 409
+            },
+            {
+              "x": 324,
+              "y": 409
+            }
+          ]
+        },
+        {
+          "relationship": "service-register",
+          "points": [
+            {
+              "x": 936,
+              "y": 300
+            },
+            {
+              "x": 534,
+              "y": 300
+            }
+          ]
+        },
+        {
+          "relationship": "service-assess",
+          "points": [
+            {
+              "x": 972,
+              "y": 345
+            },
+            {
+              "x": 744,
+              "y": 345
+            }
+          ]
+        },
+        {
+          "relationship": "core-record",
+          "points": [
+            {
+              "x": 744,
+              "y": 618
+            },
+            {
+              "x": 1164,
+              "y": 618
+            }
+          ]
+        },
+        {
+          "relationship": "platform-core",
+          "points": [
+            {
+              "x": 534,
+              "y": 658
+            },
+            {
+              "x": 744,
+              "y": 658
+            }
+          ]
+        }
       ]
     },
     {
@@ -67,16 +375,123 @@
       "folder": "Claims",
       "documentation": "How the policyholder and the handler reach the claims applications.",
       "nodes": [
-        {"element": "policyholder", "x": 40, "y": 40},
-        {"element": "handler", "x": 208, "y": 40},
-        {"element": "register", "x": 40, "y": 180},
-        {"element": "assess", "x": 208, "y": 180},
-        {"element": "claim-file", "x": 376, "y": 180},
-        {"element": "portal", "x": 40, "y": 320},
-        {"element": "api", "x": 208, "y": 320},
-        {"element": "core", "x": 376, "y": 320},
-        {"element": "service", "x": 544, "y": 320},
-        {"element": "record", "x": 712, "y": 320}
+        {
+          "element": "policyholder",
+          "x": 250,
+          "y": 40
+        },
+        {
+          "element": "handler",
+          "x": 670,
+          "y": 40
+        },
+        {
+          "element": "register",
+          "x": 460,
+          "y": 210
+        },
+        {
+          "element": "assess",
+          "x": 670,
+          "y": 210
+        },
+        {
+          "element": "claim-file",
+          "x": 880,
+          "y": 210
+        },
+        {
+          "element": "api",
+          "x": 670,
+          "y": 380
+        },
+        {
+          "element": "portal",
+          "x": 460,
+          "y": 520
+        },
+        {
+          "element": "core",
+          "x": 670,
+          "y": 520
+        },
+        {
+          "element": "service",
+          "x": 880,
+          "y": 520
+        },
+        {
+          "element": "record",
+          "x": 1090,
+          "y": 520
+        }
+      ],
+      "routes": [
+        {
+          "relationship": "register-file",
+          "points": [
+            {
+              "x": 534,
+              "y": 170
+            },
+            {
+              "x": 954,
+              "y": 170
+            }
+          ]
+        },
+        {
+          "relationship": "api-policyholder",
+          "points": [
+            {
+              "x": 744,
+              "y": 409
+            },
+            {
+              "x": 324,
+              "y": 409
+            }
+          ]
+        },
+        {
+          "relationship": "service-register",
+          "points": [
+            {
+              "x": 936,
+              "y": 300
+            },
+            {
+              "x": 534,
+              "y": 300
+            }
+          ]
+        },
+        {
+          "relationship": "service-assess",
+          "points": [
+            {
+              "x": 972,
+              "y": 345
+            },
+            {
+              "x": 744,
+              "y": 345
+            }
+          ]
+        },
+        {
+          "relationship": "core-record",
+          "points": [
+            {
+              "x": 744,
+              "y": 618
+            },
+            {
+              "x": 1164,
+              "y": 618
+            }
+          ]
+        }
       ]
     },
     {
@@ -85,11 +500,46 @@
       "folder": "Claims",
       "documentation": "The node and runtime that host the claims applications.",
       "nodes": [
-        {"element": "portal", "x": 40, "y": 40},
-        {"element": "core", "x": 208, "y": 40},
-        {"element": "platform", "x": 40, "y": 200},
-        {"element": "node", "x": 208, "y": 200},
-        {"element": "runtime", "x": 376, "y": 200}
+        {
+          "element": "portal",
+          "x": 40,
+          "y": 40
+        },
+        {
+          "element": "core",
+          "x": 250,
+          "y": 40
+        },
+        {
+          "element": "platform",
+          "x": 40,
+          "y": 210
+        },
+        {
+          "element": "node",
+          "x": 250,
+          "y": 210
+        },
+        {
+          "element": "runtime",
+          "x": 460,
+          "y": 210
+        }
+      ],
+      "routes": [
+        {
+          "relationship": "platform-core",
+          "points": [
+            {
+              "x": 114,
+              "y": 150
+            },
+            {
+              "x": 324,
+              "y": 150
+            }
+          ]
+        }
       ]
     }
   ]

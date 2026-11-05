@@ -715,10 +715,10 @@
       "target": "intake-split"
     },
     {
-    "id": "split-function",
-    "type": "triggering-relationship",
-    "source": "intake-split",
-    "target": "handling"
+      "id": "split-function",
+      "type": "triggering-relationship",
+      "source": "intake-split",
+      "target": "handling"
     },
     {
       "id": "process-function",
@@ -1457,56 +1457,56 @@
           "element": "enterprise",
           "x": 40,
           "y": 40,
-          "w": 692,
-          "h": 218
+          "w": 842,
+          "h": 362
         },
         {
           "element": "customer",
-          "parent": "enterprise",
-          "x": 20,
-          "y": 46
+          "x": 32,
+          "y": 56,
+          "parent": "enterprise"
         },
         {
           "element": "policyholder",
-          "parent": "enterprise",
-          "x": 188,
-          "y": 46
+          "x": 242,
+          "y": 56,
+          "parent": "enterprise"
         },
         {
           "element": "claimant",
-          "parent": "enterprise",
-          "x": 356,
-          "y": 46
+          "x": 452,
+          "y": 56,
+          "parent": "enterprise"
         },
         {
           "element": "claims-desk",
-          "parent": "enterprise",
-          "x": 524,
-          "y": 46
-        },
-        {
-          "element": "product",
-          "parent": "enterprise",
-          "x": 20,
-          "y": 124
-        },
-        {
-          "element": "contract",
-          "parent": "enterprise",
-          "x": 188,
-          "y": 124
-        },
-        {
-          "element": "claim-notice",
-          "parent": "enterprise",
-          "x": 356,
-          "y": 124
+          "x": 662,
+          "y": 56,
+          "parent": "enterprise"
         },
         {
           "element": "office",
-          "parent": "enterprise",
-          "x": 524,
-          "y": 124
+          "x": 32,
+          "y": 256,
+          "parent": "enterprise"
+        },
+        {
+          "element": "product",
+          "x": 242,
+          "y": 256,
+          "parent": "enterprise"
+        },
+        {
+          "element": "contract",
+          "x": 452,
+          "y": 256,
+          "parent": "enterprise"
+        },
+        {
+          "element": "claim-notice",
+          "x": 662,
+          "y": 256,
+          "parent": "enterprise"
         }
       ]
     },
@@ -1520,99 +1520,205 @@
           "element": "motivation-group",
           "x": 40,
           "y": 40,
-          "w": 860,
-          "h": 218
+          "w": 1262,
+          "h": 394
         },
         {
           "element": "director",
-          "parent": "motivation-group",
-          "x": 20,
-          "y": 46
+          "x": 32,
+          "y": 56,
+          "parent": "motivation-group"
         },
         {
           "element": "speed",
-          "parent": "motivation-group",
-          "x": 188,
-          "y": 46
+          "x": 242,
+          "y": 56,
+          "parent": "motivation-group"
         },
         {
           "element": "cycle-gap",
-          "parent": "motivation-group",
-          "x": 356,
-          "y": 46
-        },
-        {
-          "element": "five-days",
-          "parent": "motivation-group",
-          "x": 524,
-          "y": 46
+          "x": 452,
+          "y": 56,
+          "parent": "motivation-group"
         },
         {
           "element": "faster",
-          "parent": "motivation-group",
-          "x": 692,
-          "y": 46
+          "x": 662,
+          "y": 56,
+          "parent": "motivation-group"
+        },
+        {
+          "element": "five-days",
+          "x": 32,
+          "y": 256,
+          "parent": "motivation-group"
         },
         {
           "element": "straight-through",
-          "parent": "motivation-group",
-          "x": 20,
-          "y": 124
+          "x": 242,
+          "y": 256,
+          "parent": "motivation-group"
         },
         {
           "element": "record-claim",
-          "parent": "motivation-group",
-          "x": 188,
-          "y": 124
+          "x": 452,
+          "y": 256,
+          "parent": "motivation-group"
         },
         {
           "element": "retain",
-          "parent": "motivation-group",
-          "x": 356,
-          "y": 124
+          "x": 662,
+          "y": 256,
+          "parent": "motivation-group"
         },
         {
           "element": "meaning",
-          "parent": "motivation-group",
-          "x": 524,
-          "y": 124
+          "x": 872,
+          "y": 256,
+          "parent": "motivation-group"
         },
         {
           "element": "trust",
-          "parent": "motivation-group",
-          "x": 692,
-          "y": 124
+          "x": 1082,
+          "y": 256,
+          "parent": "motivation-group"
         },
         {
           "element": "strategy-group",
           "x": 40,
-          "y": 294,
-          "w": 692,
-          "h": 140
-        },
-        {
-          "element": "staff",
-          "parent": "strategy-group",
-          "x": 20,
-          "y": 46
+          "y": 514,
+          "w": 632,
+          "h": 362
         },
         {
           "element": "settlement",
-          "parent": "strategy-group",
-          "x": 188,
-          "y": 46
+          "x": 32,
+          "y": 56,
+          "parent": "strategy-group"
         },
         {
-          "element": "digitize",
-          "parent": "strategy-group",
-          "x": 356,
-          "y": 46
+          "element": "staff",
+          "x": 242,
+          "y": 56,
+          "parent": "strategy-group"
         },
         {
           "element": "claim-to-payment",
-          "parent": "strategy-group",
-          "x": 524,
-          "y": 46
+          "x": 452,
+          "y": 56,
+          "parent": "strategy-group"
+        },
+        {
+          "element": "digitize",
+          "x": 242,
+          "y": 256,
+          "parent": "strategy-group"
+        }
+      ],
+      "routes": [
+        {
+          "relationship": "director-assessment",
+          "points": [
+            {
+              "x": 146,
+              "y": 170
+            },
+            {
+              "x": 566,
+              "y": 170
+            }
+          ]
+        },
+        {
+          "relationship": "speed-outcome",
+          "points": [
+            {
+              "x": 356,
+              "y": 192
+            },
+            {
+              "x": 776,
+              "y": 192
+            }
+          ]
+        },
+        {
+          "relationship": "speed-goal",
+          "points": [
+            {
+              "x": 356,
+              "y": 214
+            },
+            {
+              "x": 128,
+              "y": 214
+            }
+          ]
+        },
+        {
+          "relationship": "assessment-goal",
+          "points": [
+            {
+              "x": 566,
+              "y": 236
+            },
+            {
+              "x": 128,
+              "y": 236
+            }
+          ]
+        },
+        {
+          "relationship": "outcome-goal",
+          "points": [
+            {
+              "x": 776,
+              "y": 258
+            },
+            {
+              "x": 128,
+              "y": 258
+            }
+          ]
+        },
+        {
+          "relationship": "goal-requirement",
+          "points": [
+            {
+              "x": 164,
+              "y": 370
+            },
+            {
+              "x": 584,
+              "y": 370
+            }
+          ]
+        },
+        {
+          "relationship": "capability-stream",
+          "points": [
+            {
+              "x": 146,
+              "y": 644
+            },
+            {
+              "x": 566,
+              "y": 644
+            }
+          ]
+        },
+        {
+          "relationship": "course-capability",
+          "points": [
+            {
+              "x": 356,
+              "y": 666
+            },
+            {
+              "x": 146,
+              "y": 666
+            }
+          ]
         }
       ]
     },
@@ -1626,281 +1732,549 @@
           "element": "business-group",
           "x": 40,
           "y": 40,
-          "w": 860,
-          "h": 218
-        },
-        {
-          "element": "board",
-          "parent": "business-group",
-          "x": 20,
-          "y": 46
-        },
-        {
-          "element": "register",
-          "parent": "business-group",
-          "x": 188,
-          "y": 46
-        },
-        {
-          "element": "handling",
-          "parent": "business-group",
-          "x": 356,
-          "y": 46
-        },
-        {
-          "element": "meeting",
-          "parent": "business-group",
-          "x": 524,
-          "y": 46
+          "w": 1262,
+          "h": 414
         },
         {
           "element": "submitted",
-          "parent": "business-group",
-          "x": 692,
-          "y": 46
-        },
-        {
-          "element": "claims-service",
-          "parent": "business-group",
-          "x": 20,
-          "y": 124
-        },
-        {
-          "element": "claim-file",
-          "parent": "business-group",
-          "x": 188,
-          "y": 124
+          "x": 32,
+          "y": 56,
+          "parent": "business-group"
         },
         {
           "element": "channel-choice",
-          "parent": "business-group",
-          "x": 356,
-          "y": 124
+          "x": 306,
+          "y": 75,
+          "w": 20,
+          "h": 20,
+          "parent": "business-group"
         },
         {
           "element": "intake-split",
-          "parent": "business-group",
-          "x": 524,
-          "y": 124
+          "x": 726,
+          "y": 75,
+          "w": 20,
+          "h": 20,
+          "parent": "business-group"
+        },
+        {
+          "element": "handling",
+          "x": 872,
+          "y": 56,
+          "parent": "business-group"
+        },
+        {
+          "element": "meeting",
+          "x": 1082,
+          "y": 56,
+          "parent": "business-group"
+        },
+        {
+          "element": "board",
+          "x": 32,
+          "y": 256,
+          "parent": "business-group"
+        },
+        {
+          "element": "claims-service",
+          "x": 242,
+          "y": 256,
+          "parent": "business-group"
+        },
+        {
+          "element": "register",
+          "x": 452,
+          "y": 256,
+          "parent": "business-group"
+        },
+        {
+          "element": "claim-file",
+          "x": 872,
+          "y": 256,
+          "parent": "business-group"
         },
         {
           "element": "application-group",
           "x": 40,
-          "y": 294,
-          "w": 860,
-          "h": 296
+          "y": 534,
+          "w": 1262,
+          "h": 562
         },
         {
           "element": "suite",
-          "parent": "application-group",
-          "x": 20,
-          "y": 46
-        },
-        {
-          "element": "claims-system",
-          "parent": "application-group",
-          "x": 188,
-          "y": 46
-        },
-        {
-          "element": "document-store",
-          "parent": "application-group",
-          "x": 356,
-          "y": 46
-        },
-        {
-          "element": "claims-api",
-          "parent": "application-group",
-          "x": 524,
-          "y": 46
-        },
-        {
-          "element": "dialogue",
-          "parent": "application-group",
-          "x": 692,
-          "y": 46
-        },
-        {
-          "element": "validate",
-          "parent": "application-group",
-          "x": 20,
-          "y": 124
-        },
-        {
-          "element": "register-case",
-          "parent": "application-group",
-          "x": 188,
-          "y": 124
-        },
-        {
-          "element": "received",
-          "parent": "application-group",
-          "x": 356,
-          "y": 124
+          "x": 32,
+          "y": 56,
+          "parent": "application-group"
         },
         {
           "element": "app-service",
-          "parent": "application-group",
-          "x": 524,
-          "y": 124
+          "x": 452,
+          "y": 56,
+          "parent": "application-group"
+        },
+        {
+          "element": "claims-system",
+          "x": 662,
+          "y": 56,
+          "parent": "application-group"
+        },
+        {
+          "element": "claims-api",
+          "x": 872,
+          "y": 56,
+          "parent": "application-group"
+        },
+        {
+          "element": "document-store",
+          "x": 32,
+          "y": 256,
+          "parent": "application-group"
         },
         {
           "element": "claim-record",
-          "parent": "application-group",
-          "x": 692,
-          "y": 124
+          "x": 662,
+          "y": 256,
+          "parent": "application-group"
+        },
+        {
+          "element": "validate",
+          "x": 872,
+          "y": 256,
+          "parent": "application-group"
+        },
+        {
+          "element": "register-case",
+          "x": 1082,
+          "y": 256,
+          "parent": "application-group"
         },
         {
           "element": "intake-join",
-          "parent": "application-group",
-          "x": 20,
-          "y": 202
+          "x": 516,
+          "y": 475,
+          "w": 20,
+          "h": 20,
+          "parent": "application-group"
+        },
+        {
+          "element": "received",
+          "x": 662,
+          "y": 456,
+          "parent": "application-group"
+        },
+        {
+          "element": "dialogue",
+          "x": 1082,
+          "y": 456,
+          "parent": "application-group"
         },
         {
           "element": "platform-group",
           "x": 40,
-          "y": 626,
-          "w": 860,
-          "h": 374
+          "y": 1176,
+          "w": 1052,
+          "h": 762
         },
         {
           "element": "cluster",
-          "parent": "platform-group",
-          "x": 20,
-          "y": 46
+          "x": 32,
+          "y": 56,
+          "parent": "platform-group"
         },
         {
           "element": "host",
-          "parent": "platform-group",
-          "x": 188,
-          "y": 46
+          "x": 242,
+          "y": 56,
+          "parent": "platform-group"
         },
         {
           "element": "server",
-          "parent": "platform-group",
-          "x": 356,
-          "y": 46
+          "x": 452,
+          "y": 56,
+          "parent": "platform-group"
         },
         {
           "element": "link",
-          "parent": "platform-group",
-          "x": 524,
-          "y": 46
+          "x": 662,
+          "y": 56,
+          "parent": "platform-group"
         },
         {
           "element": "network",
-          "parent": "platform-group",
-          "x": 692,
-          "y": 46
-        },
-        {
-          "element": "runtime",
-          "parent": "platform-group",
-          "x": 20,
-          "y": 124
-        },
-        {
-          "element": "host-api",
-          "parent": "platform-group",
-          "x": 188,
-          "y": 124
-        },
-        {
-          "element": "workload",
-          "parent": "platform-group",
-          "x": 356,
-          "y": 124
-        },
-        {
-          "element": "deploy",
-          "parent": "platform-group",
-          "x": 524,
-          "y": 124
-        },
-        {
-          "element": "handshake",
-          "parent": "platform-group",
-          "x": 692,
-          "y": 124
-        },
-        {
-          "element": "node-started",
-          "parent": "platform-group",
-          "x": 20,
-          "y": 202
-        },
-        {
-          "element": "compute",
-          "parent": "platform-group",
-          "x": 188,
-          "y": 202
+          "x": 872,
+          "y": 56,
+          "parent": "platform-group"
         },
         {
           "element": "package",
-          "parent": "platform-group",
-          "x": 356,
-          "y": 202
+          "x": 32,
+          "y": 256,
+          "parent": "platform-group"
+        },
+        {
+          "element": "runtime",
+          "x": 242,
+          "y": 256,
+          "parent": "platform-group"
+        },
+        {
+          "element": "compute",
+          "x": 452,
+          "y": 256,
+          "parent": "platform-group"
+        },
+        {
+          "element": "workload",
+          "x": 662,
+          "y": 256,
+          "parent": "platform-group"
+        },
+        {
+          "element": "deploy",
+          "x": 872,
+          "y": 256,
+          "parent": "platform-group"
         },
         {
           "element": "rack",
-          "parent": "platform-group",
-          "x": 524,
-          "y": 202
+          "x": 242,
+          "y": 456,
+          "parent": "platform-group"
+        },
+        {
+          "element": "host-api",
+          "x": 452,
+          "y": 456,
+          "parent": "platform-group"
+        },
+        {
+          "element": "handshake",
+          "x": 662,
+          "y": 456,
+          "parent": "platform-group"
+        },
+        {
+          "element": "node-started",
+          "x": 872,
+          "y": 456,
+          "parent": "platform-group"
         },
         {
           "element": "hall",
-          "parent": "platform-group",
-          "x": 692,
-          "y": 202
+          "x": 242,
+          "y": 656,
+          "parent": "platform-group"
         },
         {
           "element": "power",
-          "parent": "platform-group",
-          "x": 20,
-          "y": 280
+          "x": 452,
+          "y": 656,
+          "parent": "platform-group"
         },
         {
           "element": "disk",
-          "parent": "platform-group",
-          "x": 188,
-          "y": 280
+          "x": 662,
+          "y": 656,
+          "parent": "platform-group"
         },
         {
           "element": "change-group",
           "x": 40,
-          "y": 1036,
-          "w": 860,
-          "h": 140
-        },
-        {
-          "element": "intake-work",
-          "parent": "change-group",
-          "x": 20,
-          "y": 46
-        },
-        {
-          "element": "digital-intake",
-          "parent": "change-group",
-          "x": 188,
-          "y": 46
+          "y": 2018,
+          "w": 1052,
+          "h": 214
         },
         {
           "element": "go-live",
-          "parent": "change-group",
-          "x": 356,
-          "y": 46
+          "x": 32,
+          "y": 56,
+          "parent": "change-group"
+        },
+        {
+          "element": "intake-work",
+          "x": 242,
+          "y": 56,
+          "parent": "change-group"
+        },
+        {
+          "element": "digital-intake",
+          "x": 452,
+          "y": 56,
+          "parent": "change-group"
         },
         {
           "element": "live",
-          "parent": "change-group",
-          "x": 524,
-          "y": 46
+          "x": 662,
+          "y": 56,
+          "parent": "change-group"
         },
         {
           "element": "manual-gap",
-          "parent": "change-group",
-          "x": 692,
-          "y": 46
+          "x": 872,
+          "y": 56,
+          "parent": "change-group"
+        }
+      ],
+      "routes": [
+        {
+          "relationship": "choice-process",
+          "points": [
+            {
+              "x": 356,
+              "y": 170
+            },
+            {
+              "x": 566,
+              "y": 170
+            }
+          ]
+        },
+        {
+          "relationship": "process-split",
+          "points": [
+            {
+              "x": 566,
+              "y": 192
+            },
+            {
+              "x": 776,
+              "y": 192
+            }
+          ]
+        },
+        {
+          "relationship": "function-process",
+          "points": [
+            {
+              "x": 986,
+              "y": 214
+            },
+            {
+              "x": 566,
+              "y": 214
+            }
+          ]
+        },
+        {
+          "relationship": "process-function",
+          "points": [
+            {
+              "x": 584,
+              "y": 236
+            },
+            {
+              "x": 1004,
+              "y": 236
+            }
+          ]
+        },
+        {
+          "relationship": "meeting-process",
+          "points": [
+            {
+              "x": 1196,
+              "y": 258
+            },
+            {
+              "x": 566,
+              "y": 258
+            }
+          ]
+        },
+        {
+          "relationship": "process-service",
+          "points": [
+            {
+              "x": 548,
+              "y": 370
+            },
+            {
+              "x": 338,
+              "y": 370
+            }
+          ]
+        },
+        {
+          "relationship": "board-process",
+          "points": [
+            {
+              "x": 146,
+              "y": 392
+            },
+            {
+              "x": 566,
+              "y": 392
+            }
+          ]
+        },
+        {
+          "relationship": "suite-system",
+          "points": [
+            {
+              "x": 146,
+              "y": 664
+            },
+            {
+              "x": 776,
+              "y": 664
+            }
+          ]
+        },
+        {
+          "relationship": "api-service",
+          "points": [
+            {
+              "x": 986,
+              "y": 686
+            },
+            {
+              "x": 566,
+              "y": 686
+            }
+          ]
+        },
+        {
+          "relationship": "system-store",
+          "points": [
+            {
+              "x": 776,
+              "y": 708
+            },
+            {
+              "x": 146,
+              "y": 708
+            }
+          ]
+        },
+        {
+          "relationship": "case-service",
+          "points": [
+            {
+              "x": 1196,
+              "y": 730
+            },
+            {
+              "x": 566,
+              "y": 730
+            }
+          ]
+        },
+        {
+          "relationship": "event-case",
+          "points": [
+            {
+              "x": 776,
+              "y": 864
+            },
+            {
+              "x": 1196,
+              "y": 864
+            }
+          ]
+        },
+        {
+          "relationship": "join-case",
+          "points": [
+            {
+              "x": 566,
+              "y": 886
+            },
+            {
+              "x": 1196,
+              "y": 886
+            }
+          ]
+        },
+        {
+          "relationship": "host-compute",
+          "points": [
+            {
+              "x": 356,
+              "y": 1306
+            },
+            {
+              "x": 566,
+              "y": 1306
+            }
+          ]
+        },
+        {
+          "relationship": "compute-host",
+          "points": [
+            {
+              "x": 584,
+              "y": 1328
+            },
+            {
+              "x": 374,
+              "y": 1328
+            }
+          ]
+        },
+        {
+          "relationship": "deploy-compute",
+          "points": [
+            {
+              "x": 986,
+              "y": 1506
+            },
+            {
+              "x": 566,
+              "y": 1506
+            }
+          ]
+        },
+        {
+          "relationship": "deploy-package",
+          "points": [
+            {
+              "x": 968,
+              "y": 1528
+            },
+            {
+              "x": 128,
+              "y": 1528
+            }
+          ]
+        },
+        {
+          "relationship": "rack-compute",
+          "points": [
+            {
+              "x": 356,
+              "y": 1550
+            },
+            {
+              "x": 566,
+              "y": 1550
+            }
+          ]
+        },
+        {
+          "relationship": "golive-work",
+          "points": [
+            {
+              "x": 128,
+              "y": 2148
+            },
+            {
+              "x": 338,
+              "y": 2148
+            }
+          ]
+        },
+        {
+          "relationship": "plateau-work",
+          "points": [
+            {
+              "x": 776,
+              "y": 2170
+            },
+            {
+              "x": 356,
+              "y": 2170
+            }
+          ]
         }
       ]
     }
