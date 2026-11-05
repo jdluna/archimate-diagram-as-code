@@ -1201,20 +1201,6 @@
       "draw": false
     },
     {
-      "id": "business-group-aggregates-channel-choice",
-      "type": "aggregation-relationship",
-      "source": "business-group",
-      "target": "channel-choice",
-      "draw": false
-    },
-    {
-      "id": "business-group-aggregates-intake-split",
-      "type": "aggregation-relationship",
-      "source": "business-group",
-      "target": "intake-split",
-      "draw": false
-    },
-    {
       "id": "application-group-aggregates-suite",
       "type": "aggregation-relationship",
       "source": "application-group",
@@ -1282,13 +1268,6 @@
       "type": "aggregation-relationship",
       "source": "application-group",
       "target": "claim-record",
-      "draw": false
-    },
-    {
-      "id": "application-group-aggregates-intake-join",
-      "type": "aggregation-relationship",
-      "source": "application-group",
-      "target": "intake-join",
       "draw": false
     },
     {
