@@ -16,6 +16,8 @@ box. It writes `out/harbor-landscape.archimate`.
 `model/parcel-delivery.json` is a parcel company drawn as four views: a
 conceptual architecture, a system context, a logical architecture, and a
 high-level infrastructure diagram. It writes `out/parcel-delivery.archimate`.
+How to write a new JSON file, which concept names Archi accepts, and how the
+grid and the line lanes are calculated is in [model/README.md](model/README.md).
 Archi opens any of these files with File > Open.
 
 jArchi's repositories have no parent build of their own. The build checks
